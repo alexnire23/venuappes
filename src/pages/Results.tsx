@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, RotateCcw, Loader2, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -28,7 +28,6 @@ interface CategoryResult {
   matched: boolean;
   primary: Product | null;
   alternative: Product | null;
-  searchTerm: string;
 }
 
 // Keywords mapping for categories
@@ -112,7 +111,6 @@ export default function Results() {
                 matched: true,
                 primary: categoryProducts.find(p => p.role === 'primary') || null,
                 alternative: categoryProducts.find(p => p.role === 'alternative') || null,
-                searchTerm: item,
               });
             }
             found = true;
@@ -199,6 +197,18 @@ export default function Results() {
           </div>
         ) : (
           <div className="space-y-6 animate-fade-in">
+            {/* Global Header */}
+            {results.length > 0 && (
+              <div className="text-center mb-6">
+                <h2 className="font-serif text-2xl font-bold text-foreground mb-1">
+                  Compra esto en Mercadona
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Basado en ingredientes simples y poco procesados.
+                </p>
+              </div>
+            )}
+
             {/* Results */}
             {results.map((result, index) => (
               <div
@@ -206,47 +216,40 @@ export default function Results() {
                 className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Category Header */}
-                <div className="bg-primary/5 px-4 py-3 border-b border-border/50">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Buscaste: {result.searchTerm}
-                  </p>
-                  <h3 className="font-serif font-bold text-foreground">
-                    {result.categoryName}
-                  </h3>
-                </div>
-
                 {/* Primary Product */}
                 {result.primary && (
                   <div className="p-4">
-                    <div className="flex gap-4">
-                      {/* Product Image Placeholder */}
-                      <div className="w-24 h-24 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                        <span className="text-3xl">🛒</span>
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-2 mb-1">
-                          <span className="shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Check className="h-3 w-3 text-primary" />
-                          </span>
-                          <span className="text-xs font-medium text-primary uppercase">
-                            Recomendado
-                          </span>
-                        </div>
-                        <h4 className="font-semibold text-foreground text-sm leading-tight mb-2">
-                          {result.primary.name_exact}
-                        </h4>
-                        <ul className="space-y-1">
-                          {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                              <span className="text-primary mt-0.5">•</span>
-                              {reason}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                    {/* Product Image */}
+                    <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
+                      <img
+                        src={`/products/${result.primary.image_key}`}
+                        alt={result.primary.name_exact}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
                     </div>
+
+                    {/* Badge */}
+                    <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-2 uppercase tracking-wide">
+                      Recomendado
+                    </span>
+
+                    {/* Product Name */}
+                    <h3 className="font-serif text-lg font-bold text-foreground mb-3 leading-tight">
+                      {result.primary.name_exact}
+                    </h3>
+
+                    {/* Why Recommended */}
+                    <ul className="space-y-1.5">
+                      {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
+                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          {reason}
+                        </li>
+                      ))}
+                    </ul>
 
                     {/* Alternative Toggle */}
                     {result.alternative && (
@@ -255,7 +258,7 @@ export default function Results() {
                           onClick={() => toggleCard(result.categorySlug)}
                           className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <span>Ver alternativa</span>
+                          <span>Ver alternativa (opcional)</span>
                           {expandedCards.has(result.categorySlug) ? (
                             <ChevronUp className="h-4 w-4" />
                           ) : (
@@ -265,16 +268,20 @@ export default function Results() {
 
                         {expandedCards.has(result.categorySlug) && (
                           <div className="mt-4 flex gap-3 animate-fade-in">
-                            <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                              <span className="text-xl">🔄</span>
+                            <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                              <img
+                                src={`/products/${result.alternative.image_key}`}
+                                alt={result.alternative.name_exact}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder.svg';
+                                }}
+                              />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs text-muted-foreground mb-0.5">
-                                Alternativa
-                              </p>
-                              <h5 className="font-medium text-foreground text-sm mb-1">
+                              <p className="font-medium text-foreground text-sm mb-1">
                                 {result.alternative.name_exact}
-                              </h5>
+                              </p>
                               <ul className="space-y-0.5">
                                 {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
                                   <li key={i} className="text-xs text-muted-foreground">
@@ -323,6 +330,13 @@ export default function Results() {
                 </p>
               </div>
             )}
+
+            {/* Closing phrase */}
+            {results.length > 0 && (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                Compra estos productos y no pienses más.
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -337,7 +351,7 @@ export default function Results() {
             onClick={() => navigate('/home')}
           >
             <RotateCcw className="h-4 w-4 mr-2" />
-            Nueva lista
+            Nueva lista de la compra
           </Button>
         </div>
       )}
