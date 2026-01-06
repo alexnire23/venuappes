@@ -120,7 +120,7 @@ export default function Upload() {
 
             <div className="w-full max-w-sm space-y-4">
               <p className="text-center text-muted-foreground mb-8">
-                Haz una foto de tu lista de la compra escrita a mano o impresa
+                Haz una foto de tu lista (papel, notas o impresa)
               </p>
 
               {/* Camera Button */}

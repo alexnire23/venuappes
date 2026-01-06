@@ -70,12 +70,12 @@ export default function Write() {
       <div className="flex-1 flex flex-col px-6 py-6">
         <div className="flex-1 flex flex-col animate-fade-in">
           <p className="text-muted-foreground mb-4">
-            Escribe o pega tu lista de la compra. Un producto por línea o separados por comas.
+            Escribe o pega tu lista. Un producto por línea.
           </p>
 
           <div className="flex-1 mb-6">
             <Textarea
-              placeholder="Patatas fritas&#10;Yogur natural&#10;Tomate frito&#10;Galletas&#10;Huevos"
+              placeholder="Ejemplo:&#10;patatas fritas&#10;yogur natural&#10;tomate frito&#10;galletas&#10;huevos"
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="h-full min-h-[200px] resize-none rounded-xl text-base"

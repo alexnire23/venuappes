@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Plus, X, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface LocationState {
@@ -13,7 +13,7 @@ interface LocationState {
 }
 
 export default function Confirm() {
-  const { user, profile, loading, refreshProfile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | null;
@@ -96,25 +96,23 @@ export default function Confirm() {
       <div className="flex-1 flex flex-col px-6 py-6">
         <div className="flex-1 animate-fade-in">
           <p className="text-muted-foreground mb-4">
-            Revisa los productos detectados. Puedes añadir o eliminar items.
+            Hemos detectado estos productos. Ajusta solo si falta algo.
           </p>
 
-          {/* Items List */}
-          <div className="space-y-2 mb-6">
+          {/* Items as Chips */}
+          <div className="flex flex-wrap gap-2 mb-6">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-3 bg-card rounded-xl p-3 shadow-sm border border-border/50"
+                className="flex items-center gap-2 bg-card rounded-full pl-4 pr-2 py-2 shadow-sm border border-border/50"
               >
-                <span className="flex-1 text-foreground">{item}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                <span className="text-foreground text-sm">{item}</span>
+                <button
+                  className="w-6 h-6 rounded-full bg-muted flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors"
                   onClick={() => handleRemoveItem(index)}
                 >
-                  <X className="h-4 w-4" />
-                </Button>
+                  <X className="h-3 w-3" />
+                </button>
               </div>
             ))}
           </div>
@@ -153,10 +151,7 @@ export default function Confirm() {
               Generando...
             </>
           ) : (
-            <>
-              <Sparkles className="h-5 w-5" />
-              Generar recomendaciones
-            </>
+            'Ver qué comprar'
           )}
         </Button>
       </div>

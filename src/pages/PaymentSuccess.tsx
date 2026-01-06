@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2 } from 'lucide-react';
@@ -6,6 +6,10 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 export default function PaymentSuccess() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if coming from results (has state with items)
+  const fromResults = location.state?.fromResults;
 
   if (loading) {
     return (
@@ -26,20 +30,17 @@ export default function PaymentSuccess() {
           <CheckCircle className="h-12 w-12 text-success" />
         </div>
 
-        <h1 className="font-serif text-3xl font-bold text-foreground mb-2">
-          ¡Acceso desbloqueado!
+        <h1 className="font-serif text-3xl font-bold text-foreground mb-8">
+          Acceso desbloqueado
         </h1>
-        <p className="text-muted-foreground mb-8">
-          Ya tienes acceso ilimitado a Compra Real. Gracias por tu apoyo.
-        </p>
 
         <Button
           variant="hero"
           size="xl"
           className="w-full"
-          onClick={() => navigate('/home')}
+          onClick={() => navigate(fromResults ? '/results' : '/home')}
         >
-          Empezar a usar
+          {fromResults ? 'Volver a mis recomendaciones' : 'Empezar'}
         </Button>
       </div>
     </div>
