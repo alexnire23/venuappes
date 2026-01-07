@@ -57,39 +57,29 @@ export default function Confirm() {
       return;
     }
 
-    // If user is not logged in, redirect to auth with destination
+    // Store state for after auth (in case user needs to login)
+    const confirmState = {
+      inputType: state.inputType,
+      items,
+      rawInput: state.rawInput,
+    };
+    sessionStorage.setItem('confirmState', JSON.stringify(confirmState));
+
+    // If user is not logged in, redirect to auth first
     if (!user) {
       navigate('/auth', { 
         state: { from: '/results' },
         replace: false 
       });
-      // Store the confirm state in sessionStorage for after auth
-      sessionStorage.setItem('confirmState', JSON.stringify({
-        inputType: state.inputType,
-        items,
-        rawInput: state.rawInput,
-      }));
       return;
     }
 
-    const isPaid = profile?.is_paid ?? false;
-    const remainingUses = profile?.free_uses_remaining ?? 0;
-
-    // Check if user can generate
-    if (!isPaid && remainingUses <= 0) {
-      navigate('/paywall');
-      return;
-    }
-
+    // User is logged in - go directly to results
+    // The access check (paid/free uses) happens in /results AFTER showing results at least once
     setIsGenerating(true);
 
-    // Navigate to results with the items
     navigate('/results', {
-      state: {
-        inputType: state.inputType,
-        items,
-        rawInput: state.rawInput,
-      },
+      state: confirmState,
     });
   };
 

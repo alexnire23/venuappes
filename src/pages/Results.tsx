@@ -65,25 +65,29 @@ export default function Results() {
   }, [locationState, user]);
 
   useEffect(() => {
-    if (state?.items && user) {
+    // Wait for profile to be loaded before processing
+    if (state?.items && user && profile !== null) {
       processItems();
     }
-  }, [state, user]);
+  }, [state, user, profile]);
 
   const processItems = async () => {
-    if (!state?.items) return;
+    if (!state?.items || !profile) return;
 
     setIsLoading(true);
 
     try {
-      // Check if user can use
-      const isPaid = profile?.is_paid ?? false;
-      const remainingUses = profile?.free_uses_remaining ?? 0;
+      // Check access: paid users always have access, free users need remaining uses
+      const isPaid = profile.is_paid;
+      const remainingUses = profile.free_uses_remaining;
 
+      // ONLY redirect to paywall if NOT paid AND no free uses left
       if (!isPaid && remainingUses <= 0) {
-        navigate('/paywall');
+        navigate('/paywall', { replace: true });
         return;
       }
+      
+      // User has access - either paid or has free uses remaining
 
       // Fetch all categories and products
       const { data: categories } = await supabase
