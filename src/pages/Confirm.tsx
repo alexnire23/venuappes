@@ -36,10 +36,6 @@ export default function Confirm() {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
   if (!state) {
     return <Navigate to="/home" replace />;
   }
@@ -58,6 +54,21 @@ export default function Confirm() {
   const handleGenerate = async () => {
     if (items.length === 0) {
       toast.error('Añade al menos un producto');
+      return;
+    }
+
+    // If user is not logged in, redirect to auth with destination
+    if (!user) {
+      navigate('/auth', { 
+        state: { from: '/results' },
+        replace: false 
+      });
+      // Store the confirm state in sessionStorage for after auth
+      sessionStorage.setItem('confirmState', JSON.stringify({
+        inputType: state.inputType,
+        items,
+        rawInput: state.rawInput,
+      }));
       return;
     }
 

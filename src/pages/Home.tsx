@@ -1,10 +1,10 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Camera, PenLine, ShoppingCart, LogOut, Loader2 } from 'lucide-react';
 
 export default function Home() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
   if (loading) {
@@ -13,10 +13,6 @@ export default function Home() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth" replace />;
   }
 
   const handleLogout = async () => {
@@ -34,9 +30,11 @@ export default function Home() {
           </div>
           <h1 className="font-serif font-bold text-foreground">Compra Real</h1>
         </div>
-        <Button variant="ghost" size="icon" onClick={handleLogout}>
-          <LogOut className="h-5 w-5" />
-        </Button>
+        {user && (
+          <Button variant="ghost" size="icon" onClick={handleLogout}>
+            <LogOut className="h-5 w-5" />
+          </Button>
+        )}
       </header>
 
       {/* Main Content */}
