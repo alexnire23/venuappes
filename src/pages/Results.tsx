@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, RotateCcw, Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { RotateCcw, Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -43,12 +43,26 @@ export default function Results() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as LocationState | null;
+  
+  // Try to get state from location or sessionStorage
+  const locationState = location.state as LocationState | null;
+  const [state, setState] = useState<LocationState | null>(locationState);
 
   const [results, setResults] = useState<CategoryResult[]>([]);
   const [unmatchedItems, setUnmatchedItems] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+
+  // Recover state from sessionStorage if coming from auth
+  useEffect(() => {
+    if (!locationState && user) {
+      const savedState = sessionStorage.getItem('confirmState');
+      if (savedState) {
+        setState(JSON.parse(savedState));
+        sessionStorage.removeItem('confirmState');
+      }
+    }
+  }, [locationState, user]);
 
   useEffect(() => {
     if (state?.items && user) {
@@ -170,11 +184,13 @@ export default function Results() {
     );
   }
 
+  // Redirect to auth if not logged in
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth" state={{ from: '/results' }} replace />;
   }
 
-  if (!state) {
+  // If no state and no saved state, go to home
+  if (!state && !sessionStorage.getItem('confirmState')) {
     return <Navigate to="/home" replace />;
   }
 
@@ -182,9 +198,6 @@ export default function Results() {
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
       <header className="px-4 py-4 flex items-center gap-3 border-b border-border/50">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
         <h1 className="font-serif font-bold text-foreground">Recomendaciones</h1>
       </header>
 
@@ -219,27 +232,30 @@ export default function Results() {
                 {/* Primary Product */}
                 {result.primary && (
                   <div className="p-4">
-                    {/* Product Image */}
-                    <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
-                      <img
-                        src={`/products/${result.primary.image_key}`}
-                        alt={result.primary.name_exact}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
-                      />
-                    </div>
+                    {/* Product Image - only show if we have a real image */}
+                    {result.primary.image_key && (
+                      <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
+                        <img
+                          src={`/products/${result.primary.image_key}`}
+                          alt={result.primary.name_exact}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Hide the image container if image fails to load
+                            (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
 
-                    {/* Badge */}
-                    <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-2 uppercase tracking-wide">
-                      Recomendado
-                    </span>
-
-                    {/* Product Name */}
-                    <h3 className="font-serif text-lg font-bold text-foreground mb-3 leading-tight">
+                    {/* Product Name - MOST prominent */}
+                    <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
                       {result.primary.name_exact}
                     </h3>
+
+                    {/* Badge */}
+                    <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-3 uppercase tracking-wide">
+                      Recomendado
+                    </span>
 
                     {/* Why Recommended */}
                     <ul className="space-y-1.5">
@@ -268,16 +284,18 @@ export default function Results() {
 
                         {expandedCards.has(result.categorySlug) && (
                           <div className="mt-4 flex gap-3 animate-fade-in">
-                            <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
-                              <img
-                                src={`/products/${result.alternative.image_key}`}
-                                alt={result.alternative.name_exact}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.src = '/placeholder.svg';
-                                }}
-                              />
-                            </div>
+                            {result.alternative.image_key && (
+                              <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                                <img
+                                  src={`/products/${result.alternative.image_key}`}
+                                  alt={result.alternative.name_exact}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-foreground text-sm mb-1">
                                 {result.alternative.name_exact}

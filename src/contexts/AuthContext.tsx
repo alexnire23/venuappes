@@ -100,10 +100,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
+    // Check if there's a saved state for redirect after auth
+    const savedState = sessionStorage.getItem('confirmState');
+    const redirectPath = savedState ? '/results' : '/home';
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/onboarding`,
+        redirectTo: `${window.location.origin}${redirectPath}`,
       },
     });
     return { error: error as Error | null };

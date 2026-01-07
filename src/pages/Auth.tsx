@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,10 +12,23 @@ const passwordSchema = z.string().min(6, 'La contraseña debe tener al menos 6 c
 
 export default function Auth() {
   const { user, loading, signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Get redirect destination from location state
+  const from = (location.state as { from?: string })?.from || '/home';
+
+  // Redirect after login
+  useEffect(() => {
+    if (user && !loading) {
+      navigate(from, { replace: true });
+    }
+  }, [user, loading, navigate, from]);
 
   if (loading) {
     return (
@@ -26,7 +39,7 @@ export default function Auth() {
   }
 
   if (user) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to={from} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
