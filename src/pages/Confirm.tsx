@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
 import { ArrowLeft, Plus, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -86,11 +87,14 @@ export default function Confirm() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-3 border-b border-border/50">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="font-serif font-bold text-foreground">Confirmar lista</h1>
+      <header className="px-4 py-4 flex flex-col gap-3 border-b border-border/50">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="font-serif font-bold text-foreground flex-1">Confirmar lista</h1>
+        </div>
+        <FreeUsesIndicator />
       </header>
 
       {/* Main Content */}
