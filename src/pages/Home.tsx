@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
 import { Camera, PenLine, ShoppingCart, LogOut, Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -23,18 +24,21 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-            <ShoppingCart className="h-5 w-5 text-primary-foreground" />
+      <header className="px-6 py-4 flex flex-col gap-3 border-b border-border/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+              <ShoppingCart className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <h1 className="font-serif font-bold text-foreground">Compra Real</h1>
           </div>
-          <h1 className="font-serif font-bold text-foreground">Compra Real</h1>
+          {user && (
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="h-5 w-5" />
+            </Button>
+          )}
         </div>
-        {user && (
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="h-5 w-5" />
-          </Button>
-        )}
+        {user && <FreeUsesIndicator />}
       </header>
 
       {/* Main Content */}
