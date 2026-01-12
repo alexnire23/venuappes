@@ -52,6 +52,7 @@ export default function Results() {
   const [unmatchedItems, setUnmatchedItems] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [hasProcessed, setHasProcessed] = useState(false); // Flag to prevent double processing
 
   // Recover state from sessionStorage if coming from auth
   useEffect(() => {
@@ -65,29 +66,32 @@ export default function Results() {
   }, [locationState, user]);
 
   useEffect(() => {
-    // Wait for profile to be loaded before processing
-    if (state?.items && user && profile !== null) {
+    // Wait for profile to be loaded before processing, and only process ONCE
+    if (state?.items && user && profile !== null && !hasProcessed) {
       processItems();
     }
-  }, [state, user, profile]);
+  }, [state, user, profile, hasProcessed]);
 
   const processItems = async () => {
-    if (!state?.items || !profile) return;
+    if (!state?.items || !profile || hasProcessed) return;
 
+    // Mark as processed IMMEDIATELY to prevent double execution
+    setHasProcessed(true);
     setIsLoading(true);
 
-    try {
-      // Check access: paid users always have access, free users need remaining uses
-      const isPaid = profile.is_paid;
-      const remainingUses = profile.free_uses_remaining;
+    // Check access: paid users always have access, free users need remaining uses
+    const isPaid = profile.is_paid;
+    const remainingUses = profile.free_uses_remaining;
 
-      // ONLY redirect to paywall if NOT paid AND no free uses left
-      if (!isPaid && remainingUses <= 0) {
-        navigate('/paywall', { replace: true });
-        return;
-      }
-      
-      // User has access - either paid or has free uses remaining
+    // ONLY redirect to paywall if NOT paid AND no free uses left
+    if (!isPaid && remainingUses <= 0) {
+      navigate('/paywall', { replace: true });
+      return;
+    }
+    
+    // User has access - either paid or has free uses remaining
+
+    try {
 
       // Fetch all categories and products
       const { data: categories } = await supabase
