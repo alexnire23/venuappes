@@ -79,17 +79,37 @@ export default function Results() {
     setHasProcessed(true);
     setIsLoading(true);
 
-    // Check access: paid users always have access, free users need remaining uses
-    const isPaid = profile.is_paid;
-    const remainingUses = profile.free_uses_remaining;
+    // Use secure edge function to check and decrement free uses
+    // This prevents client-side manipulation of is_paid or free_uses_remaining
+    try {
+      const { data: accessData, error: accessError } = await supabase.functions.invoke(
+        'decrement-free-use',
+        { method: 'POST' }
+      );
 
-    // ONLY redirect to paywall if NOT paid AND no free uses left
-    if (!isPaid && remainingUses <= 0) {
-      navigate('/paywall', { replace: true });
+      if (accessError) {
+        console.error('Access check error:', accessError);
+        toast.error('Error al verificar acceso');
+        navigate('/home', { replace: true });
+        return;
+      }
+
+      // Check if access was granted
+      if (!accessData?.access_granted) {
+        navigate('/paywall', { replace: true });
+        return;
+      }
+
+      // Refresh profile to show updated free uses
+      await refreshProfile();
+    } catch (error) {
+      console.error('Error checking access:', error);
+      toast.error('Error al verificar acceso');
+      navigate('/home', { replace: true });
       return;
     }
     
-    // User has access - either paid or has free uses remaining
+    // User has access - either paid or edge function decremented free uses
 
     try {
 
@@ -148,15 +168,7 @@ export default function Results() {
       setResults(matched);
       setUnmatchedItems(unmatched);
 
-      // Decrement uses if not paid
-      if (!isPaid && remainingUses > 0) {
-        await supabase
-          .from('profiles')
-          .update({ free_uses_remaining: remainingUses - 1 })
-          .eq('id', user!.id);
-        
-        await refreshProfile();
-      }
+      // Note: free_uses_remaining was already decremented by the secure edge function
 
       // Record scan
       await supabase.from('scans').insert({
