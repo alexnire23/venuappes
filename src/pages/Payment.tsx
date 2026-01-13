@@ -25,21 +25,9 @@ export default function Payment() {
     return <Navigate to="/payment-success" replace />;
   }
 
-  // Temporary: simulate payment for demo
-  const handleSimulatePayment = async () => {
-    try {
-      await supabase
-        .from('profiles')
-        .update({ is_paid: true })
-        .eq('id', user.id);
-      
-      await refreshProfile();
-      toast.success('¡Pago completado!');
-      navigate('/payment-success');
-    } catch (error) {
-      toast.error('Error al procesar el pago');
-    }
-  };
+  // Stripe integration placeholder - payment must be processed securely via webhook
+  // The simulate payment button has been removed as it was a security vulnerability
+  // Real payments will be processed through Stripe webhooks that update is_paid server-side
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 safe-top safe-bottom">
@@ -56,17 +44,9 @@ export default function Payment() {
         </p>
 
         <div className="bg-card rounded-2xl p-6 shadow-md border border-border/50 mb-6">
-          <p className="text-sm text-muted-foreground mb-4">
-            La integración con Stripe está pendiente. Por ahora, puedes simular el pago para probar la app.
+          <p className="text-sm text-muted-foreground">
+            La integración con Stripe está en desarrollo. Pronto podrás pagar de forma segura.
           </p>
-          <Button
-            variant="hero"
-            size="lg"
-            className="w-full"
-            onClick={handleSimulatePayment}
-          >
-            Simular pago (Demo)
-          </Button>
         </div>
 
         <Button
