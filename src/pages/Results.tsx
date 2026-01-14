@@ -253,7 +253,7 @@ export default function Results() {
                 {result.primary && (
                   <div className="p-4">
                     {/* Category Label */}
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
                       {result.categoryName}
                     </p>
 
