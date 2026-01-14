@@ -252,6 +252,11 @@ export default function Results() {
                 {/* Primary Product */}
                 {result.primary && (
                   <div className="p-4">
+                    {/* Category Label */}
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+                      {result.categoryName}
+                    </p>
+
                     {/* Product Image - only show if we have a real image */}
                     {result.primary.image_key && (
                       <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
