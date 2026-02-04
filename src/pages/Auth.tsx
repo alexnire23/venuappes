@@ -103,17 +103,14 @@ export default function Auth() {
               <ShoppingCart className="h-8 w-8 text-primary-foreground" />
             </div>
             <h1 className="font-serif text-3xl font-bold text-foreground">
-              Compra Real
+              Guarda tus recomendaciones
             </h1>
           </div>
 
           {/* Info Text */}
           <div className="text-center mb-6">
             <p className="text-muted-foreground">
-              Crea tu cuenta para guardar tus recomendaciones.
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">
-              3 usos gratis · Sin compromiso.
+              Para acceder ahora y cuando vuelvas a dudar.
             </p>
           </div>
 
@@ -174,12 +171,17 @@ export default function Auth() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Entrando...
+                  Un momento...
                 </>
               ) : (
                 'Continuar'
               )}
             </Button>
+
+            {/* Microcopy aclaratorio */}
+            <p className="text-sm text-muted-foreground text-center mt-3">
+              Si ya tienes cuenta, entra. Si no, la creamos en un momento.
+            </p>
           </form>
 
           {/* Divider */}
