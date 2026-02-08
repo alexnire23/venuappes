@@ -37,6 +37,8 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'tomate-frito': ['tomate', 'tomates', 'frito', 'salsa'],
   'galletas-simples': ['galletas', 'galleta', 'pastas', 'cookies', 'bizcocho'],
   'huevos': ['huevos', 'huevo', 'huevos camperos'],
+  'avena': ['avena', 'copos de avena', 'oats', 'porridge'],
+  'cereales': ['cereales', 'cereal', 'corn flakes', 'cornflakes'],
 };
 
 export default function Results() {
