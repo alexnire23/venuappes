@@ -34,11 +34,16 @@ interface CategoryResult {
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'patatas-fritas': ['patatas', 'patata', 'fritas', 'chips', 'snacks'],
   'yogur-natural': ['yogur', 'yogures', 'yogurt', 'yoghurt', 'natural'],
-  'tomate-frito': ['tomate', 'tomates', 'frito', 'salsa'],
+  'tomate-frito': ['tomate frito', 'tomates frito'],
   'galletas-simples': ['galletas', 'galleta', 'pastas', 'cookies', 'bizcocho'],
   'huevos': ['huevos', 'huevo', 'huevos camperos'],
   'avena': ['avena', 'copos de avena', 'oats', 'porridge'],
   'cereales': ['cereales', 'cereal', 'corn flakes', 'cornflakes'],
+  'mostaza-antigua': ['mostaza antigua'],
+  'mostaza-dijon': ['mostaza dijon', 'dijon'],
+  'salsa-tomate': ['salsa de tomate', 'salsa tomate', 'tomate albahaca'],
+  'helados': ['helado', 'helados', 'polo', 'polos', 'ice cream'],
+  'pan-de-molde': ['pan de molde', 'pan molde'],
 };
 
 export default function Results() {
@@ -251,6 +256,21 @@ export default function Results() {
                 className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
+                {/* No acceptable product */}
+                {!result.primary && (
+                  <div className="p-4">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                      {result.categoryName}
+                    </p>
+                    <div className="flex items-start gap-3 bg-muted/50 rounded-xl p-4">
+                      <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">
+                        No hay ningún producto aceptable en Mercadona
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Primary Product */}
                 {result.primary && (
                   <div className="p-4">
@@ -259,7 +279,7 @@ export default function Results() {
                       {result.categoryName}
                     </p>
 
-                    {/* Product Image - only show if we have a real image */}
+                    {/* Product Image */}
                     {result.primary.image_key && (
                       <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
                         <img
@@ -267,24 +287,21 @@ export default function Results() {
                           alt={result.primary.name_exact}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            // Hide the image container if image fails to load
                             (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                           }}
                         />
                       </div>
                     )}
 
-                    {/* Product Name - MOST prominent */}
+                    {/* Product Name */}
                     <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
                       {result.primary.name_exact}
                     </h3>
 
-                    {/* Badge */}
                     <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-3 uppercase tracking-wide">
                       Recomendado
                     </span>
 
-                    {/* Why Recommended */}
                     <ul className="space-y-1.5">
                       {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
                         <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
@@ -343,6 +360,7 @@ export default function Results() {
                 )}
               </div>
             ))}
+
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (
