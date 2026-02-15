@@ -12,6 +12,7 @@ import Upload from "./pages/Upload";
 import Write from "./pages/Write";
 import Confirm from "./pages/Confirm";
 import Results from "./pages/Results";
+import SearchPage from "./pages/Search";
 import Paywall from "./pages/Paywall";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/write" element={<Write />} />
             <Route path="/confirm" element={<Confirm />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/paywall" element={<Paywall />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
