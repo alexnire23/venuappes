@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
-import { Camera, PenLine, ShoppingCart, LogOut, Loader2 } from 'lucide-react';
+import { Camera, PenLine, ShoppingCart, LogOut, Loader2, Search } from 'lucide-react';
 
 export default function Home() {
   const { user, loading, signOut } = useAuth();
@@ -75,6 +75,17 @@ export default function Home() {
             >
               <PenLine className="h-5 w-5 mr-2" />
               Escribir lista manualmente
+            </Button>
+
+            {/* Search Product Button */}
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full text-muted-foreground"
+              onClick={() => navigate('/search')}
+            >
+              <Search className="h-5 w-5 mr-2" />
+              Buscar producto
             </Button>
           </div>
         </div>
