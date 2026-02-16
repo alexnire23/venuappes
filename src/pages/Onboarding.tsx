@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Check } from 'lucide-react';
+import { ENABLE_AUTH } from '@/config/flags';
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -60,9 +61,11 @@ export default function Onboarding() {
             Empezar
           </Button>
 
-          <p className="text-center text-sm text-muted-foreground">
-            3 usos gratis · Pago único de 4,99 €
-          </p>
+          {ENABLE_AUTH && (
+            <p className="text-center text-sm text-muted-foreground">
+              3 usos gratis · Pago único de 4,99 €
+            </p>
+          )}
         </div>
       </div>
     </div>
