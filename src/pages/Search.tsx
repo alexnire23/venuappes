@@ -31,16 +31,16 @@ interface CategoryResult {
 
 // Same keyword mapping as Results
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  'patatas-fritas': ['patatas', 'patata', 'fritas', 'chips', 'snacks'],
-  'yogur-natural': ['yogur', 'yogures', 'yogurt', 'yoghurt', 'natural'],
-  'tomate-frito': ['tomate frito', 'tomates frito', 'tomate'],
+  'patatas-fritas': ['patatas', 'patata', 'fritas', 'chips', 'snacks', 'patatas fritas'],
+  'yogur-natural': ['yogur', 'yogures', 'yogurt', 'yoghurt', 'natural', 'yogur natural'],
+  'tomate-frito': ['tomate frito', 'tomates frito', 'tomate', 'frito'],
   'galletas-simples': ['galletas', 'galleta', 'pastas', 'cookies', 'bizcocho'],
   'huevos': ['huevos', 'huevo', 'huevos camperos'],
-  'avena': ['avena', 'copos de avena', 'oats', 'porridge'],
+  'avena': ['avena', 'copos de avena', 'oats', 'porridge', 'copos'],
   'cereales': ['cereales', 'cereal', 'corn flakes', 'cornflakes'],
-  'mostaza-antigua': ['mostaza antigua'],
-  'mostaza-dijon': ['mostaza dijon', 'dijon'],
-  'salsa-tomate': ['salsa de tomate', 'salsa tomate', 'tomate albahaca', 'salsa'],
+  'mostaza-antigua': ['mostaza antigua', 'mostaza', 'antigua'],
+  'mostaza-dijon': ['mostaza dijon', 'mostaza', 'dijon'],
+  'salsa-tomate': ['salsa de tomate', 'salsa tomate', 'tomate albahaca', 'salsa', 'salsas', 'tomate', 'datterino'],
   'helados': ['helado', 'helados', 'polo', 'polos', 'ice cream', 'granizado'],
   'pan-de-molde': ['pan de molde', 'pan molde', 'pan'],
 };
@@ -80,30 +80,39 @@ export default function SearchPage() {
     fetchData();
   }, []);
 
-  const findBestMatch = (q: string): CategoryResult | null => {
-    if (!q.trim() || !loaded) return null;
+  const findAllMatches = (q: string): CategoryResult[] => {
+    if (!q.trim() || !loaded) return [];
 
     const normalized = q.toLowerCase().trim();
 
-    // Sort keywords by length descending so longer/more-specific matches win first
-    const entries = Object.entries(CATEGORY_KEYWORDS).sort(
-      (a, b) => Math.max(...b[1].map(k => k.length)) - Math.max(...a[1].map(k => k.length))
-    );
+    type ScoredResult = CategoryResult & { score: number };
+    const results: ScoredResult[] = [];
 
-    for (const [slug, keywords] of entries) {
-      if (keywords.some(kw => normalized.includes(kw) || kw.includes(normalized))) {
+    for (const [slug, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+      let bestScore = 0;
+      for (const kw of keywords) {
+        if (normalized === kw) {
+          bestScore = Math.max(bestScore, 3); // exact match
+        } else if (kw.includes(normalized)) {
+          bestScore = Math.max(bestScore, 2); // keyword contains query
+        } else if (normalized.includes(kw)) {
+          bestScore = Math.max(bestScore, 1); // query contains keyword
+        }
+      }
+      if (bestScore > 0) {
         const cat = categories.find(c => c.slug === slug);
         const catProducts = products.filter(p => cat && p.category_id === cat.id);
-        return {
+        results.push({
           categoryName: cat?.name ?? '',
           categorySlug: slug,
           primary: catProducts.find(p => p.role === 'primary') || null,
           alternative: catProducts.find(p => p.role === 'alternative') || null,
-        };
+          score: bestScore,
+        });
       }
     }
 
-    return null;
+    return results.sort((a, b) => b.score - a.score);
   };
 
   const handleSearch = () => {
@@ -112,10 +121,10 @@ export default function SearchPage() {
     setExpandedCards(new Set());
   };
 
-  const result = hasSearched ? findBestMatch(searchedQuery) : null;
+  const results = hasSearched ? findAllMatches(searchedQuery) : [];
 
   const showSuggestions = !hasSearched && !query.trim();
-  const showEmpty = hasSearched && !result && loaded;
+  const showEmpty = hasSearched && results.length === 0 && loaded;
 
   const toggleCard = (slug: string) => {
     const next = new Set(expandedCards);
@@ -189,115 +198,117 @@ export default function SearchPage() {
               <SearchIcon className="h-6 w-6 text-muted-foreground" />
             </div>
             <p className="text-sm text-muted-foreground">
-              Todavía no tenemos recomendaciones para esa categoría.
+              Todavía no tenemos recomendaciones para esa búsqueda.
             </p>
           </div>
         )}
 
-        {/* Result — single best match */}
-        {result && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up">
-              {/* No acceptable product */}
-              {!result.primary && (
-                <div className="p-4">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
-                    {result.categoryName}
-                  </p>
-                  <div className="flex items-start gap-3 bg-muted/50 rounded-xl p-4">
-                    <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                    <p className="text-sm text-muted-foreground">
-                      En esta categoría no hay ahora mismo una opción claramente buena. Preferimos no recomendar antes que hacerlo mal.
+        {/* Results — all matches */}
+        {results.length > 0 && (
+          <div className="space-y-4 animate-fade-in">
+            {results.map((result) => (
+              <div key={result.categorySlug} className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up">
+                {/* No acceptable product */}
+                {!result.primary && (
+                  <div className="p-4">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                      {result.categoryName}
                     </p>
+                    <div className="flex items-start gap-3 bg-muted/50 rounded-xl p-4">
+                      <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">
+                        En esta categoría no hay ahora mismo una opción claramente buena. Preferimos no recomendar antes que hacerlo mal.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Primary Product */}
-              {result.primary && (
-                <div className="p-4">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
-                    {result.categoryName}
-                  </p>
+                {/* Primary Product */}
+                {result.primary && (
+                  <div className="p-4">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                      {result.categoryName}
+                    </p>
 
-                  {result.primary.image_key && (
-                    <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
-                      <img
-                        src={`/products/${result.primary.image_key}`}
-                        alt={result.primary.name_exact}
-                        className="w-full h-full object-cover"
-                        onError={e => {
-                          (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
+                    {result.primary.image_key && (
+                      <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
+                        <img
+                          src={`/products/${result.primary.image_key}`}
+                          alt={result.primary.name_exact}
+                          className="w-full h-full object-cover"
+                          onError={e => {
+                            (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
 
-                  <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
-                    {result.primary.name_exact}
-                  </h3>
+                    <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
+                      {result.primary.name_exact}
+                    </h3>
 
-                  <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-3 uppercase tracking-wide">
-                    Recomendado
-                  </span>
+                    <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-3 uppercase tracking-wide">
+                      Recomendado
+                    </span>
 
-                  <ul className="space-y-1.5">
-                    {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <span className="text-primary mt-0.5">•</span>
-                        {reason}
-                      </li>
-                    ))}
-                  </ul>
+                    <ul className="space-y-1.5">
+                      {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
+                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          {reason}
+                        </li>
+                      ))}
+                    </ul>
 
-                  {/* Alternative */}
-                  {result.alternative && (
-                    <div className="mt-4 pt-4 border-t border-border/50">
-                      <button
-                        onClick={() => toggleCard(result.categorySlug)}
-                        className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <span>Ver alternativa (opcional)</span>
-                        {expandedCards.has(result.categorySlug) ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </button>
-
-                      {expandedCards.has(result.categorySlug) && (
-                        <div className="mt-4 flex gap-3 animate-fade-in">
-                          {result.alternative.image_key && (
-                            <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
-                              <img
-                                src={`/products/${result.alternative.image_key}`}
-                                alt={result.alternative.name_exact}
-                                className="w-full h-full object-cover"
-                                onError={e => {
-                                  (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-                                }}
-                              />
-                            </div>
+                    {/* Alternative */}
+                    {result.alternative && (
+                      <div className="mt-4 pt-4 border-t border-border/50">
+                        <button
+                          onClick={() => toggleCard(result.categorySlug)}
+                          className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <span>Ver alternativa (opcional)</span>
+                          {expandedCards.has(result.categorySlug) ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
                           )}
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-foreground text-sm mb-1">
-                              {result.alternative.name_exact}
-                            </p>
-                            <ul className="space-y-0.5">
-                              {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                <li key={i} className="text-xs text-muted-foreground">
-                                  • {reason}
-                                </li>
-                              ))}
-                            </ul>
+                        </button>
+
+                        {expandedCards.has(result.categorySlug) && (
+                          <div className="mt-4 flex gap-3 animate-fade-in">
+                            {result.alternative.image_key && (
+                              <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                                <img
+                                  src={`/products/${result.alternative.image_key}`}
+                                  alt={result.alternative.name_exact}
+                                  className="w-full h-full object-cover"
+                                  onError={e => {
+                                    (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-foreground text-sm mb-1">
+                                {result.alternative.name_exact}
+                              </p>
+                              <ul className="space-y-0.5">
+                                {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
+                                  <li key={i} className="text-xs text-muted-foreground">
+                                    • {reason}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>
