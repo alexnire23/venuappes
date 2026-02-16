@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { ENABLE_AUTH } from '@/config/flags';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
@@ -29,7 +30,7 @@ export default function Confirm() {
     }
   }, [state]);
 
-  if (loading) {
+  if (ENABLE_AUTH && loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -58,7 +59,6 @@ export default function Confirm() {
       return;
     }
 
-    // Store state for after auth (in case user needs to login)
     const confirmState = {
       inputType: state.inputType,
       items,
@@ -66,8 +66,8 @@ export default function Confirm() {
     };
     sessionStorage.setItem('confirmState', JSON.stringify(confirmState));
 
-    // If user is not logged in, redirect to auth first
-    if (!user) {
+    // If auth is enabled and user is not logged in, redirect to auth first
+    if (ENABLE_AUTH && !user) {
       navigate('/auth', { 
         state: { from: '/results' },
         replace: false 
@@ -75,13 +75,9 @@ export default function Confirm() {
       return;
     }
 
-    // User is logged in - go directly to results
-    // The access check (paid/free uses) happens in /results AFTER showing results at least once
+    // Go directly to results
     setIsGenerating(true);
-
-    navigate('/results', {
-      state: confirmState,
-    });
+    navigate('/results', { state: confirmState });
   };
 
   return (
@@ -94,7 +90,7 @@ export default function Confirm() {
           </Button>
           <h1 className="font-serif font-bold text-foreground flex-1">Confirmar lista</h1>
         </div>
-        <FreeUsesIndicator />
+        {ENABLE_AUTH && <FreeUsesIndicator />}
       </header>
 
       {/* Main Content */}

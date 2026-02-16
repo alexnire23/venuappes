@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { ENABLE_AUTH } from '@/config/flags';
 import { Button } from '@/components/ui/button';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
 import { Camera, PenLine, ShoppingCart, LogOut, Loader2, Search } from 'lucide-react';
@@ -8,7 +9,7 @@ export default function Home() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
-  if (loading) {
+  if (ENABLE_AUTH && loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -32,13 +33,13 @@ export default function Home() {
             </div>
             <h1 className="font-serif font-bold text-foreground">Compra Real</h1>
           </div>
-          {user && (
+          {ENABLE_AUTH && user && (
             <Button variant="ghost" size="icon" onClick={handleLogout}>
               <LogOut className="h-5 w-5" />
             </Button>
           )}
         </div>
-        {user && <FreeUsesIndicator />}
+        {ENABLE_AUTH && user && <FreeUsesIndicator />}
       </header>
 
       {/* Main Content */}

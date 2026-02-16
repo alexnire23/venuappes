@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { ENABLE_AUTH } from '@/config/flags';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +52,6 @@ export default function Results() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Try to get state from location or sessionStorage
   const locationState = location.state as LocationState | null;
   const [state, setState] = useState<LocationState | null>(locationState);
 
@@ -59,68 +59,62 @@ export default function Results() {
   const [unmatchedItems, setUnmatchedItems] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
-  const [hasProcessed, setHasProcessed] = useState(false); // Flag to prevent double processing
+  const [hasProcessed, setHasProcessed] = useState(false);
 
   // Recover state from sessionStorage if coming from auth
   useEffect(() => {
-    if (!locationState && user) {
+    if (!locationState) {
       const savedState = sessionStorage.getItem('confirmState');
       if (savedState) {
         setState(JSON.parse(savedState));
         sessionStorage.removeItem('confirmState');
       }
     }
-  }, [locationState, user]);
+  }, [locationState]);
 
   useEffect(() => {
-    // Wait for profile to be loaded before processing, and only process ONCE
-    if (state?.items && user && profile !== null && !hasProcessed) {
-      processItems();
-    }
+    if (!state?.items || hasProcessed) return;
+    // When auth is disabled, process immediately; when enabled, wait for user+profile
+    if (ENABLE_AUTH && (!user || profile === null)) return;
+    processItems();
   }, [state, user, profile, hasProcessed]);
 
   const processItems = async () => {
-    if (!state?.items || !profile || hasProcessed) return;
+    if (!state?.items || hasProcessed) return;
 
-    // Mark as processed IMMEDIATELY to prevent double execution
     setHasProcessed(true);
     setIsLoading(true);
 
-    // Use secure edge function to check and decrement free uses
-    // This prevents client-side manipulation of is_paid or free_uses_remaining
-    try {
-      const { data: accessData, error: accessError } = await supabase.functions.invoke(
-        'decrement-free-use',
-        { method: 'POST' }
-      );
+    // Access check only when auth is enabled
+    if (ENABLE_AUTH && profile) {
+      try {
+        const { data: accessData, error: accessError } = await supabase.functions.invoke(
+          'decrement-free-use',
+          { method: 'POST' }
+        );
 
-      if (accessError) {
-        console.error('Access check error:', accessError);
+        if (accessError) {
+          console.error('Access check error:', accessError);
+          toast.error('Error al verificar acceso');
+          navigate('/home', { replace: true });
+          return;
+        }
+
+        if (!accessData?.access_granted) {
+          navigate('/paywall', { replace: true });
+          return;
+        }
+
+        await refreshProfile();
+      } catch (error) {
+        console.error('Error checking access:', error);
         toast.error('Error al verificar acceso');
         navigate('/home', { replace: true });
         return;
       }
-
-      // Check if access was granted
-      if (!accessData?.access_granted) {
-        navigate('/paywall', { replace: true });
-        return;
-      }
-
-      // Refresh profile to show updated free uses
-      await refreshProfile();
-    } catch (error) {
-      console.error('Error checking access:', error);
-      toast.error('Error al verificar acceso');
-      navigate('/home', { replace: true });
-      return;
     }
-    
-    // User has access - either paid or edge function decremented free uses
 
     try {
-
-      // Fetch all categories and products
       const { data: categories } = await supabase
         .from('categories')
         .select('*')
@@ -136,7 +130,6 @@ export default function Results() {
         throw new Error('Error loading data');
       }
 
-      // Match items to categories
       const matchedCategories = new Set<string>();
       const matched: CategoryResult[] = [];
       const unmatched: string[] = [];
@@ -175,15 +168,15 @@ export default function Results() {
       setResults(matched);
       setUnmatchedItems(unmatched);
 
-      // Note: free_uses_remaining was already decremented by the secure edge function
-
-      // Record scan
-      await supabase.from('scans').insert({
-        user_id: user!.id,
-        input_type: state.inputType,
-        raw_input: state.rawInput,
-        categories_matched: matched.map(m => m.categorySlug),
-      });
+      // Record scan only when auth is enabled and user exists
+      if (ENABLE_AUTH && user) {
+        await supabase.from('scans').insert({
+          user_id: user.id,
+          input_type: state.inputType,
+          raw_input: state.rawInput,
+          categories_matched: matched.map(m => m.categorySlug),
+        });
+      }
 
     } catch (error) {
       console.error('Error processing items:', error);
@@ -203,7 +196,7 @@ export default function Results() {
     setExpandedCards(newExpanded);
   };
 
-  if (loading) {
+  if (ENABLE_AUTH && loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -211,8 +204,8 @@ export default function Results() {
     );
   }
 
-  // Redirect to auth if not logged in
-  if (!user) {
+  // Redirect to auth if not logged in (only when auth is enabled)
+  if (ENABLE_AUTH && !user) {
     return <Navigate to="/auth" state={{ from: '/results' }} replace />;
   }
 
@@ -256,7 +249,6 @@ export default function Results() {
                 className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* No acceptable product */}
                 {!result.primary && (
                   <div className="p-4">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
@@ -271,15 +263,12 @@ export default function Results() {
                   </div>
                 )}
 
-                {/* Primary Product */}
                 {result.primary && (
                   <div className="p-4">
-                    {/* Category Label */}
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
                       {result.categoryName}
                     </p>
 
-                    {/* Product Image */}
                     {result.primary.image_key && (
                       <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
                         <img
@@ -293,7 +282,6 @@ export default function Results() {
                       </div>
                     )}
 
-                    {/* Product Name */}
                     <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
                       {result.primary.name_exact}
                     </h3>
@@ -311,7 +299,6 @@ export default function Results() {
                       ))}
                     </ul>
 
-                    {/* Alternative Toggle */}
                     {result.alternative && (
                       <div className="mt-4 pt-4 border-t border-border/50">
                         <button
@@ -360,7 +347,6 @@ export default function Results() {
                 )}
               </div>
             ))}
-
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (

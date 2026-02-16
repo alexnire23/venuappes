@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { ENABLE_AUTH } from '@/config/flags';
 
 interface Profile {
   id: string;
@@ -27,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(ENABLE_AUTH);
   const [profileLoading, setProfileLoading] = useState(false);
 
   const fetchProfile = async (userId: string) => {
@@ -54,9 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // Skip all auth initialization when auth is disabled
+    if (!ENABLE_AUTH) return;
+
     let mounted = true;
     
-    // Check for existing session first
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -80,7 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     initializeAuth();
 
-    // Set up auth state listener for changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
@@ -89,7 +91,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Use setTimeout to avoid potential Supabase deadlock
           setTimeout(async () => {
             if (mounted) {
               await fetchProfile(session.user.id);
@@ -108,36 +109,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
+      email, password, options: { emailRedirectTo: redirectUrl },
     });
     return { error: error as Error | null };
   };
 
   const signInWithGoogle = async () => {
-    // Check if there's a saved state for redirect after auth
     const savedState = sessionStorage.getItem('confirmState');
     const redirectPath = savedState ? '/results' : '/home';
-    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}${redirectPath}`,
-      },
+      options: { redirectTo: `${window.location.origin}${redirectPath}` },
     });
     return { error: error as Error | null };
   };
@@ -149,15 +138,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{
-      user,
-      session,
-      profile,
-      loading,
-      signInWithEmail,
-      signUpWithEmail,
-      signInWithGoogle,
-      signOut,
-      refreshProfile,
+      user, session, profile, loading,
+      signInWithEmail, signUpWithEmail, signInWithGoogle, signOut, refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>
