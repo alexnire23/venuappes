@@ -30,11 +30,8 @@ export default function Upload() {
 
     setIsProcessing(true);
 
-    // Simulate OCR processing - in real app, this would call an edge function
-    // For MVP, we'll extract mock data and navigate to confirm
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Navigate to confirm with mock extracted items
     navigate('/confirm', {
       state: {
         inputType: 'image',
@@ -47,19 +44,19 @@ export default function Upload() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-3 border-b border-border/50">
+      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-serif font-bold text-foreground">Subir foto</h1>
+        <h1 className="font-serif text-lg font-bold text-foreground">Subir foto</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-6 py-6">
+      <div className="flex-1 flex flex-col px-7 py-7">
         {selectedImage ? (
           <div className="flex-1 flex flex-col animate-fade-in">
             {/* Preview */}
-            <div className="relative flex-1 rounded-2xl overflow-hidden bg-muted mb-6">
+            <div className="relative flex-1 rounded-2xl overflow-hidden bg-muted/50 mb-7">
               <img
                 src={selectedImage}
                 alt="Lista de la compra"
@@ -104,8 +101,8 @@ export default function Upload() {
               className="hidden"
             />
 
-            <div className="w-full max-w-sm space-y-4">
-              <p className="text-center text-muted-foreground mb-8">
+            <div className="w-full max-w-sm space-y-5">
+              <p className="text-center text-muted-foreground text-sm mb-10 leading-relaxed">
                 Haz una foto de tu lista (papel, notas o impresa)
               </p>
 
@@ -113,7 +110,7 @@ export default function Upload() {
               <Button
                 variant="hero"
                 size="xl"
-                className="w-full h-auto py-6"
+                className="w-full h-auto py-7"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Camera className="h-6 w-6 mr-3" />

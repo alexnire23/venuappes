@@ -14,35 +14,35 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen flex flex-col gradient-hero safe-top safe-bottom">
-      <div className="flex-1 flex flex-col px-6 py-8">
+      <div className="flex-1 flex flex-col px-7 py-10">
         {/* Header */}
-        <div className="flex items-center justify-center mb-10 animate-fade-in">
+        <div className="flex items-center justify-center mb-12 animate-fade-in">
           <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
             <ShoppingCart className="h-7 w-7 text-primary-foreground" />
           </div>
         </div>
 
         {/* Hero Text */}
-        <div className="text-center mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <h1 className="font-serif text-4xl font-bold text-foreground mb-4 leading-tight">
+        <div className="text-center mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <h1 className="font-serif text-4xl font-bold text-foreground mb-5 leading-tight">
             Compra sin pensar
           </h1>
-          <p className="text-lg text-muted-foreground max-w-xs mx-auto">
+          <p className="text-base text-muted-foreground max-w-xs mx-auto leading-relaxed">
             Sube tu lista y te decimos exactamente qué producto comprar en Mercadona.
           </p>
         </div>
 
         {/* Bullets */}
-        <div className="space-y-3 mb-10 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <div className="space-y-3.5 mb-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
           {bullets.map((bullet, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 bg-card/60 rounded-xl p-3 border border-border/30"
+              className="flex items-center gap-3.5 bg-card/50 rounded-xl p-4 border border-border/30"
             >
-              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="w-6 h-6 rounded-full bg-primary/8 flex items-center justify-center shrink-0">
                 <Check className="h-3.5 w-3.5 text-primary" />
               </div>
-              <span className="text-foreground">{bullet}</span>
+              <span className="text-foreground text-[15px]">{bullet}</span>
             </div>
           ))}
         </div>

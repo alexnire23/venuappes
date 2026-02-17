@@ -31,7 +31,6 @@ interface CategoryResult {
   alternative: Product | null;
 }
 
-// Keywords mapping for categories
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'patatas-fritas': ['patatas', 'patata', 'fritas', 'chips', 'snacks'],
   'yogur-natural': ['yogur', 'yogures', 'yogurt', 'yoghurt', 'natural'],
@@ -217,23 +216,23 @@ export default function Results() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-3 border-b border-border/50">
-        <h1 className="font-serif font-bold text-foreground">Recomendaciones</h1>
+      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
+        <h1 className="font-serif text-lg font-bold text-foreground">Recomendaciones</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className="flex-1 overflow-y-auto px-7 py-7">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
-            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Analizando tu lista...</p>
+          <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
+            <Loader2 className="h-10 w-10 animate-spin text-primary mb-5" />
+            <p className="text-muted-foreground text-sm">Analizando tu lista...</p>
           </div>
         ) : (
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-7 animate-fade-in">
             {/* Global Header */}
             {results.length > 0 && (
-              <div className="text-center mb-6">
-                <h2 className="font-serif text-2xl font-bold text-foreground mb-1">
+              <div className="text-center mb-8">
+                <h2 className="font-serif text-2xl font-bold text-foreground mb-2">
                   Compra esto en Mercadona
                 </h2>
                 <p className="text-sm text-muted-foreground">
@@ -246,17 +245,19 @@ export default function Results() {
             {results.map((result, index) => (
               <div
                 key={result.categorySlug}
-                className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="bg-card rounded-2xl border border-border/40 overflow-hidden animate-slide-up"
+                style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
               >
                 {!result.primary && (
-                  <div className="p-4">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                  <div className="p-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
                       {result.categoryName}
                     </p>
-                    <div className="flex items-start gap-3 bg-muted/50 rounded-xl p-4">
-                      <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex items-start gap-3 bg-muted/40 rounded-xl p-4">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
                         No hay ningún producto aceptable en Mercadona
                       </p>
                     </div>
@@ -264,13 +265,13 @@ export default function Results() {
                 )}
 
                 {result.primary && (
-                  <div className="p-4">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                  <div className="p-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
                       {result.categoryName}
                     </p>
 
                     {result.primary.image_key && (
-                      <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
+                      <div className="w-full aspect-[4/3] rounded-xl bg-muted/50 mb-5 overflow-hidden">
                         <img
                           src={`/products/${result.primary.image_key}`}
                           alt={result.primary.name_exact}
@@ -282,28 +283,28 @@ export default function Results() {
                       </div>
                     )}
 
-                    <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
+                    <h3 className="font-serif text-xl font-bold text-foreground mb-2.5 leading-tight">
                       {result.primary.name_exact}
                     </h3>
 
-                    <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-3 uppercase tracking-wide">
+                    <span className="inline-block text-[10px] font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full mb-4 uppercase tracking-widest">
                       Recomendado
                     </span>
 
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-2.5">
                       {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="text-primary mt-0.5">•</span>
+                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2.5 leading-relaxed">
+                          <span className="text-primary/50 mt-0.5 text-xs">•</span>
                           {reason}
                         </li>
                       ))}
                     </ul>
 
                     {result.alternative && (
-                      <div className="mt-4 pt-4 border-t border-border/50">
+                      <div className="mt-5 pt-5 border-t border-border/40">
                         <button
                           onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          className="w-full flex items-center justify-between text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
                         >
                           <span>Ver alternativa (opcional)</span>
                           {expandedCards.has(result.categorySlug) ? (
@@ -314,9 +315,9 @@ export default function Results() {
                         </button>
 
                         {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-4 flex gap-3 animate-fade-in">
+                          <div className="mt-4 flex gap-3.5 animate-fade-in">
                             {result.alternative.image_key && (
-                              <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                              <div className="w-20 h-20 rounded-xl bg-muted/50 overflow-hidden shrink-0">
                                 <img
                                   src={`/products/${result.alternative.image_key}`}
                                   alt={result.alternative.name_exact}
@@ -328,12 +329,12 @@ export default function Results() {
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-foreground text-sm mb-1">
+                              <p className="font-medium text-foreground text-sm mb-1.5">
                                 {result.alternative.name_exact}
                               </p>
-                              <ul className="space-y-0.5">
+                              <ul className="space-y-1">
                                 {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground">
+                                  <li key={i} className="text-xs text-muted-foreground leading-relaxed">
                                     • {reason}
                                   </li>
                                 ))}
@@ -350,9 +351,11 @@ export default function Results() {
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (
-              <div className="bg-muted/50 rounded-2xl p-4 border border-border/50">
+              <div className="bg-muted/30 rounded-2xl p-5 border border-border/40">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                    <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
+                  </div>
                   <div>
                     <p className="font-medium text-foreground text-sm mb-1">
                       Aún no lo cubrimos
@@ -367,9 +370,9 @@ export default function Results() {
 
             {/* Empty State */}
             {results.length === 0 && unmatchedItems.length > 0 && (
-              <div className="text-center py-10">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                  <AlertCircle className="h-8 w-8 text-muted-foreground" />
+              <div className="text-center py-12">
+                <div className="w-14 h-14 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-5">
+                  <AlertCircle className="h-6 w-6 text-muted-foreground/60" />
                 </div>
                 <h3 className="font-serif font-bold text-foreground mb-2">
                   Sin coincidencias
@@ -382,7 +385,7 @@ export default function Results() {
 
             {/* Closing phrase */}
             {results.length > 0 && (
-              <p className="text-center text-sm text-muted-foreground py-4">
+              <p className="text-center text-sm text-muted-foreground/60 py-4">
                 Compra estos productos y no pienses más.
               </p>
             )}
@@ -392,7 +395,7 @@ export default function Results() {
 
       {/* Footer */}
       {!isLoading && (
-        <div className="px-6 py-4 border-t border-border/50 bg-background">
+        <div className="px-7 py-5 border-t border-border/40 bg-background">
           <Button
             variant="hero"
             size="lg"
