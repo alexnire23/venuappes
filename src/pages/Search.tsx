@@ -92,11 +92,11 @@ export default function SearchPage() {
       let bestScore = 0;
       for (const kw of keywords) {
         if (normalized === kw) {
-          bestScore = Math.max(bestScore, 3); // exact match
+          bestScore = Math.max(bestScore, 3);
         } else if (kw.includes(normalized)) {
-          bestScore = Math.max(bestScore, 2); // keyword contains query
+          bestScore = Math.max(bestScore, 2);
         } else if (normalized.includes(kw)) {
-          bestScore = Math.max(bestScore, 1); // query contains keyword
+          bestScore = Math.max(bestScore, 1);
         }
       }
       if (bestScore > 0) {
@@ -136,44 +136,45 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-3 border-b border-border/50">
+      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-serif font-bold text-foreground">Buscar producto</h1>
+        <h1 className="font-serif text-lg font-bold text-foreground">Buscar producto</h1>
       </header>
 
       {/* Search bar + subtitle */}
-      <div className="px-6 pt-6 pb-2 space-y-3">
-        <p className="text-sm text-muted-foreground">
+      <div className="px-7 pt-7 pb-2 space-y-4">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           Escribe una categoría o producto (ej: yogur, tomate frito, patatas fritas…) y te diremos qué comprar.
         </p>
         <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
           <Input
             value={query}
             onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && query.trim() && handleSearch()}
             placeholder="Buscar…"
-            className="pl-10"
+            className="pl-11 h-12 rounded-xl bg-card border-border/50 shadow-sm text-base"
             autoFocus
           />
         </div>
 
-          <Button
-            onClick={handleSearch}
-            disabled={!query.trim()}
-            className="w-full mt-3"
-            size="lg"
-          >
-            Ver recomendación
-          </Button>
-        </div>
+        <Button
+          onClick={handleSearch}
+          disabled={!query.trim()}
+          className="w-full mt-1"
+          size="lg"
+        >
+          Ver recomendación
+        </Button>
+      </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-7 py-5">
         {/* Suggestion chips */}
         {showSuggestions && (
-          <div className="flex flex-wrap gap-2 animate-fade-in">
+          <div className="flex flex-wrap gap-2.5 animate-fade-in">
             {SUGGESTION_CHIPS.map(chip => (
               <button
                 key={chip.query}
@@ -183,7 +184,7 @@ export default function SearchPage() {
                   setHasSearched(true);
                   setExpandedCards(new Set());
                 }}
-                className="px-3 py-1.5 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/70 transition-colors"
+                className="px-4 py-2 rounded-full text-sm font-medium bg-card text-muted-foreground border border-border/50 hover:border-primary/30 hover:text-foreground transition-all"
               >
                 {chip.label}
               </button>
@@ -193,9 +194,9 @@ export default function SearchPage() {
 
         {/* Empty state */}
         {showEmpty && (
-          <div className="text-center py-16 animate-fade-in">
-            <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-              <SearchIcon className="h-6 w-6 text-muted-foreground" />
+          <div className="text-center py-20 animate-fade-in">
+            <div className="w-14 h-14 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-5">
+              <SearchIcon className="h-6 w-6 text-muted-foreground/60" />
             </div>
             <p className="text-sm text-muted-foreground">
               Todavía no tenemos recomendaciones para esa búsqueda.
@@ -205,18 +206,24 @@ export default function SearchPage() {
 
         {/* Results — all matches */}
         {results.length > 0 && (
-          <div className="space-y-4 animate-fade-in">
-            {results.map((result) => (
-              <div key={result.categorySlug} className="bg-card rounded-2xl shadow-md border border-border/50 overflow-hidden animate-slide-up">
+          <div className="space-y-5 animate-fade-in">
+            {results.map((result, index) => (
+              <div
+                key={result.categorySlug}
+                className="bg-card rounded-2xl border border-border/40 overflow-hidden animate-slide-up"
+                style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
+              >
                 {/* No acceptable product */}
                 {!result.primary && (
-                  <div className="p-4">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                  <div className="p-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
                       {result.categoryName}
                     </p>
-                    <div className="flex items-start gap-3 bg-muted/50 rounded-xl p-4">
-                      <AlertCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex items-start gap-3 bg-muted/40 rounded-xl p-4">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
                         En esta categoría no hay ahora mismo una opción claramente buena. Preferimos no recomendar antes que hacerlo mal.
                       </p>
                     </div>
@@ -225,13 +232,13 @@ export default function SearchPage() {
 
                 {/* Primary Product */}
                 {result.primary && (
-                  <div className="p-4">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                  <div className="p-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
                       {result.categoryName}
                     </p>
 
                     {result.primary.image_key && (
-                      <div className="w-full aspect-[4/3] rounded-xl bg-muted mb-4 overflow-hidden">
+                      <div className="w-full aspect-[4/3] rounded-xl bg-muted/50 mb-5 overflow-hidden">
                         <img
                           src={`/products/${result.primary.image_key}`}
                           alt={result.primary.name_exact}
@@ -243,18 +250,18 @@ export default function SearchPage() {
                       </div>
                     )}
 
-                    <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-tight">
+                    <h3 className="font-serif text-xl font-bold text-foreground mb-2.5 leading-tight">
                       {result.primary.name_exact}
                     </h3>
 
-                    <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full mb-3 uppercase tracking-wide">
+                    <span className="inline-block text-[10px] font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full mb-4 uppercase tracking-widest">
                       Recomendado
                     </span>
 
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-2.5">
                       {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="text-primary mt-0.5">•</span>
+                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2.5 leading-relaxed">
+                          <span className="text-primary/50 mt-0.5 text-xs">•</span>
                           {reason}
                         </li>
                       ))}
@@ -262,10 +269,10 @@ export default function SearchPage() {
 
                     {/* Alternative */}
                     {result.alternative && (
-                      <div className="mt-4 pt-4 border-t border-border/50">
+                      <div className="mt-5 pt-5 border-t border-border/40">
                         <button
                           onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          className="w-full flex items-center justify-between text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
                         >
                           <span>Ver alternativa (opcional)</span>
                           {expandedCards.has(result.categorySlug) ? (
@@ -276,9 +283,9 @@ export default function SearchPage() {
                         </button>
 
                         {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-4 flex gap-3 animate-fade-in">
+                          <div className="mt-4 flex gap-3.5 animate-fade-in">
                             {result.alternative.image_key && (
-                              <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                              <div className="w-20 h-20 rounded-xl bg-muted/50 overflow-hidden shrink-0">
                                 <img
                                   src={`/products/${result.alternative.image_key}`}
                                   alt={result.alternative.name_exact}
@@ -290,12 +297,12 @@ export default function SearchPage() {
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-foreground text-sm mb-1">
+                              <p className="font-medium text-foreground text-sm mb-1.5">
                                 {result.alternative.name_exact}
                               </p>
-                              <ul className="space-y-0.5">
+                              <ul className="space-y-1">
                                 {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground">
+                                  <li key={i} className="text-xs text-muted-foreground leading-relaxed">
                                     • {reason}
                                   </li>
                                 ))}

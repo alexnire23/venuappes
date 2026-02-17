@@ -66,7 +66,6 @@ export default function Confirm() {
     };
     sessionStorage.setItem('confirmState', JSON.stringify(confirmState));
 
-    // If auth is enabled and user is not logged in, redirect to auth first
     if (ENABLE_AUTH && !user) {
       navigate('/auth', { 
         state: { from: '/results' },
@@ -75,7 +74,6 @@ export default function Confirm() {
       return;
     }
 
-    // Go directly to results
     setIsGenerating(true);
     navigate('/results', { state: confirmState });
   };
@@ -83,33 +81,34 @@ export default function Confirm() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-4 py-4 flex flex-col gap-3 border-b border-border/50">
+      <header className="px-7 py-5 flex flex-col gap-3 border-b border-border/40">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-serif font-bold text-foreground flex-1">Confirmar lista</h1>
+          <h1 className="font-serif text-lg font-bold text-foreground flex-1">Confirmar lista</h1>
         </div>
         {ENABLE_AUTH && <FreeUsesIndicator />}
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-6 py-6">
+      <div className="flex-1 flex flex-col px-7 py-7">
         <div className="flex-1 animate-fade-in">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
             Hemos detectado estos productos. Ajusta solo si falta algo.
           </p>
 
           {/* Items as Chips */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2.5 mb-7">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 bg-card rounded-full pl-4 pr-2 py-2 shadow-sm border border-border/50"
+                className="flex items-center gap-2 bg-card rounded-full pl-4 pr-2 py-2 border border-border/40"
+                style={{ boxShadow: 'var(--shadow-sm)' }}
               >
                 <span className="text-foreground text-sm">{item}</span>
                 <button
-                  className="w-6 h-6 rounded-full bg-muted flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  className="w-6 h-6 rounded-full bg-muted/60 flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors"
                   onClick={() => handleRemoveItem(index)}
                 >
                   <X className="h-3 w-3" />
@@ -119,18 +118,18 @@ export default function Confirm() {
           </div>
 
           {/* Add Item */}
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2.5 mb-8">
             <Input
               placeholder="Añadir producto..."
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-              className="flex-1 h-11 rounded-xl"
+              className="flex-1 h-12 rounded-xl bg-card border-border/50 shadow-sm"
             />
             <Button
               variant="secondary"
               size="icon"
-              className="h-11 w-11 shrink-0"
+              className="h-12 w-12 shrink-0 rounded-xl"
               onClick={handleAddItem}
             >
               <Plus className="h-5 w-5" />
