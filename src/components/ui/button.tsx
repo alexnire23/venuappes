@@ -10,24 +10,25 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90",
+          "bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/90",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-secondary",
+          "border-2 border-input bg-background hover:bg-secondary hover:border-primary/30",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-primary text-primary-foreground shadow-lg hover:shadow-xl text-base font-bold tracking-tight",
-        accent: "bg-accent text-accent-foreground hover:bg-accent/90",
+        // Custom variants for Compra Real
+        hero: "bg-primary text-primary-foreground shadow-lg hover:shadow-xl text-base font-bold",
+        accent: "bg-accent text-accent-foreground shadow-md hover:shadow-lg hover:bg-accent/90",
         soft: "bg-primary/10 text-primary hover:bg-primary/20",
       },
       size: {
         default: "h-11 px-5 py-2",
         sm: "h-9 rounded-md px-3 text-xs",
-        lg: "h-12 rounded-lg px-8 text-base",
-        xl: "h-14 rounded-lg px-10 text-lg",
+        lg: "h-12 rounded-xl px-8 text-base",
+        xl: "h-14 rounded-xl px-10 text-lg",
         icon: "h-10 w-10",
       },
     },

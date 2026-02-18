@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
 import { Button } from '@/components/ui/button';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
-import { Camera, LogOut, Loader2, ArrowRight } from 'lucide-react';
+import { Camera, PenLine, ShoppingCart, LogOut, Loader2, Search } from 'lucide-react';
 
 export default function Home() {
   const { user, loading, signOut } = useAuth();
@@ -24,70 +24,83 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
-      {/* Header — minimal */}
-      <header className="px-8 py-5 flex items-center justify-between">
-        <h1 className="font-serif text-lg font-bold text-foreground">Compra Real</h1>
-        {ENABLE_AUTH && user && (
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="h-5 w-5" />
-          </Button>
-        )}
-      </header>
-      {ENABLE_AUTH && user && (
-        <div className="px-8">
-          <FreeUsesIndicator />
+      {/* Header */}
+      <header className="px-7 py-5 flex flex-col gap-3 border-b border-border/40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+              <ShoppingCart className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <h1 className="font-serif text-lg font-bold text-foreground">Compra Real</h1>
+          </div>
+          {ENABLE_AUTH && user && (
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="h-5 w-5" />
+            </Button>
+          )}
         </div>
-      )}
+        {ENABLE_AUTH && user && <FreeUsesIndicator />}
+      </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-8 pt-12 pb-8">
+      <div className="flex-1 flex flex-col px-7 py-10">
+        {/* Upload Section */}
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="w-full max-w-sm animate-slide-up">
-            <h2 className="font-serif text-3xl font-bold text-foreground mb-2 leading-tight">
-              Sube tu lista
+          <div className="w-full max-w-sm space-y-5 animate-slide-up">
+            <h2 className="font-serif text-3xl font-bold text-foreground text-center mb-1 leading-tight">
+              Sube tu lista de la compra
             </h2>
-            <p className="text-muted-foreground text-sm mb-10">
-              Te decimos qué producto comprar.
+            <p className="text-center text-muted-foreground text-sm mb-8">
+              Te decimos qué producto comprar
             </p>
 
-            {/* Primary CTA — premium block */}
+            {/* Upload Photo Button */}
             <Button
               variant="hero"
               size="xl"
-              className="w-full h-auto py-8 flex-col gap-3 mb-10"
+              className="w-full h-auto py-10 flex-col gap-4"
               onClick={() => navigate('/upload')}
             >
-              <Camera className="h-7 w-7" />
-              <span className="text-base font-semibold">Subir foto de mi lista</span>
+              <div className="w-16 h-16 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
+                <Camera className="h-8 w-8" />
+              </div>
+              <span className="text-lg font-semibold">Subir foto de mi lista</span>
             </Button>
 
-            {/* Secondary actions — editorial text links */}
-            <div className="space-y-5">
-              <button
+            {/* Spacer */}
+            <div className="pt-2" />
+
+            {/* Secondary Actions */}
+            <div className="space-y-1">
+              <Button
+                variant="ghost"
+                size="lg"
+                className="w-full text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => navigate('/write')}
-                className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors group"
               >
-                <span>Escribir manualmente</span>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
+                <PenLine className="h-4 w-4 mr-2.5 opacity-70" />
+                Escribir lista manualmente
+              </Button>
 
-              <div className="w-full h-px bg-border" />
+              <div className="mx-auto w-12 h-px bg-border/60" />
 
-              <button
+              <Button
+                variant="ghost"
+                size="lg"
+                className="w-full text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => navigate('/search')}
-                className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors group"
               >
-                <span>Buscar producto</span>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
+                <Search className="h-4 w-4 mr-2.5 opacity-70" />
+                Buscar producto
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Mercadona Badge */}
-        <div className="text-center pt-8">
-          <span className="text-[10px] text-muted-foreground/50 tracking-widest uppercase">
-            Mercadona · MVP
+        <div className="text-center pt-6">
+          <span className="text-[11px] text-muted-foreground/60 tracking-wide uppercase">
+            Mercadona (MVP)
           </span>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { RotateCcw, Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -60,6 +60,7 @@ export default function Results() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [hasProcessed, setHasProcessed] = useState(false);
 
+  // Recover state from sessionStorage if coming from auth
   useEffect(() => {
     if (!locationState) {
       const savedState = sessionStorage.getItem('confirmState');
@@ -72,6 +73,7 @@ export default function Results() {
 
   useEffect(() => {
     if (!state?.items || hasProcessed) return;
+    // When auth is disabled, process immediately; when enabled, wait for user+profile
     if (ENABLE_AUTH && (!user || profile === null)) return;
     processItems();
   }, [state, user, profile, hasProcessed]);
@@ -82,6 +84,7 @@ export default function Results() {
     setHasProcessed(true);
     setIsLoading(true);
 
+    // Access check only when auth is enabled
     if (ENABLE_AUTH && profile) {
       try {
         const { data: accessData, error: accessError } = await supabase.functions.invoke(
@@ -164,6 +167,7 @@ export default function Results() {
       setResults(matched);
       setUnmatchedItems(unmatched);
 
+      // Record scan only when auth is enabled and user exists
       if (ENABLE_AUTH && user) {
         await supabase.from('scans').insert({
           user_id: user.id,
@@ -199,10 +203,12 @@ export default function Results() {
     );
   }
 
+  // Redirect to auth if not logged in (only when auth is enabled)
   if (ENABLE_AUTH && !user) {
     return <Navigate to="/auth" state={{ from: '/results' }} replace />;
   }
 
+  // If no state and no saved state, go to home
   if (!state && !sessionStorage.getItem('confirmState')) {
     return <Navigate to="/home" replace />;
   }
@@ -210,23 +216,23 @@ export default function Results() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-8 py-5">
+      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
         <h1 className="font-serif text-lg font-bold text-foreground">Recomendaciones</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-8 pb-8">
+      <div className="flex-1 overflow-y-auto px-7 py-7">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-28 animate-fade-in">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-5" />
-            <p className="text-muted-foreground text-sm">Analizando tu lista…</p>
+          <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
+            <Loader2 className="h-10 w-10 animate-spin text-primary mb-5" />
+            <p className="text-muted-foreground text-sm">Analizando tu lista...</p>
           </div>
         ) : (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-7 animate-fade-in">
             {/* Global Header */}
             {results.length > 0 && (
-              <div className="mb-4">
-                <h2 className="font-serif text-2xl font-bold text-foreground mb-1.5">
+              <div className="text-center mb-8">
+                <h2 className="font-serif text-2xl font-bold text-foreground mb-2">
                   Compra esto en Mercadona
                 </h2>
                 <p className="text-sm text-muted-foreground">
@@ -239,35 +245,33 @@ export default function Results() {
             {results.map((result, index) => (
               <div
                 key={result.categorySlug}
-                className="bg-card rounded-xl overflow-hidden animate-slide-up"
+                className="bg-card rounded-2xl border border-border/40 overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
               >
                 {!result.primary && (
-                  <div className="p-6">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-4">
+                  <div className="p-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
                       {result.categoryName}
                     </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      En esta categoría no hay una opción claramente buena.
-                    </p>
+                    <div className="flex items-start gap-3 bg-muted/40 rounded-xl p-4">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        No hay ningún producto aceptable en Mercadona
+                      </p>
+                    </div>
                   </div>
                 )}
 
                 {result.primary && (
-                  <div>
-                    {/* Category label */}
-                    <div className="px-6 pt-6 flex items-center justify-between">
-                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
-                        {result.categoryName}
-                      </p>
-                      <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em] border border-primary/25 px-2 py-0.5 rounded">
-                        Recomendado
-                      </span>
-                    </div>
+                  <div className="p-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
+                      {result.categoryName}
+                    </p>
 
-                    {/* Image — larger, more visual impact */}
                     {result.primary.image_key && (
-                      <div className="mt-4 mx-6 aspect-[3/2] rounded-lg bg-muted/30 overflow-hidden">
+                      <div className="w-full aspect-[4/3] rounded-xl bg-muted/50 mb-5 overflow-hidden">
                         <img
                           src={`/products/${result.primary.image_key}`}
                           alt={result.primary.name_exact}
@@ -279,67 +283,67 @@ export default function Results() {
                       </div>
                     )}
 
-                    {/* Product name — bigger, more protagonist */}
-                    <div className="px-6 pt-5 pb-6">
-                      <h3 className="font-serif text-2xl font-bold text-foreground mb-5 leading-tight">
-                        {result.primary.name_exact}
-                      </h3>
+                    <h3 className="font-serif text-xl font-bold text-foreground mb-2.5 leading-tight">
+                      {result.primary.name_exact}
+                    </h3>
 
-                      {/* Reasons — editorial em-dash style */}
-                      <div className="space-y-2.5">
-                        {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                          <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">
-                            — {reason}
-                          </p>
-                        ))}
-                      </div>
+                    <span className="inline-block text-[10px] font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full mb-4 uppercase tracking-widest">
+                      Recomendado
+                    </span>
 
-                      {/* Alternative */}
-                      {result.alternative && (
-                        <div className="mt-6 pt-5 border-t border-border/50">
-                          <button
-                            onClick={() => toggleCard(result.categorySlug)}
-                            className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            <span>Ver alternativa</span>
-                            {expandedCards.has(result.categorySlug) ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
-                            )}
-                          </button>
+                    <ul className="space-y-2.5">
+                      {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
+                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2.5 leading-relaxed">
+                          <span className="text-primary/50 mt-0.5 text-xs">•</span>
+                          {reason}
+                        </li>
+                      ))}
+                    </ul>
 
-                          {expandedCards.has(result.categorySlug) && (
-                            <div className="mt-4 flex gap-4 animate-fade-in">
-                              {result.alternative.image_key && (
-                                <div className="w-20 h-20 rounded-lg bg-muted/30 overflow-hidden shrink-0">
-                                  <img
-                                    src={`/products/${result.alternative.image_key}`}
-                                    alt={result.alternative.name_exact}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-                                    }}
-                                  />
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-foreground text-sm mb-2">
-                                  {result.alternative.name_exact}
-                                </p>
-                                <div className="space-y-1">
-                                  {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                    <p key={i} className="text-xs text-muted-foreground leading-relaxed">
-                                      — {reason}
-                                    </p>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
+                    {result.alternative && (
+                      <div className="mt-5 pt-5 border-t border-border/40">
+                        <button
+                          onClick={() => toggleCard(result.categorySlug)}
+                          className="w-full flex items-center justify-between text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+                        >
+                          <span>Ver alternativa (opcional)</span>
+                          {expandedCards.has(result.categorySlug) ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
                           )}
-                        </div>
-                      )}
-                    </div>
+                        </button>
+
+                        {expandedCards.has(result.categorySlug) && (
+                          <div className="mt-4 flex gap-3.5 animate-fade-in">
+                            {result.alternative.image_key && (
+                              <div className="w-20 h-20 rounded-xl bg-muted/50 overflow-hidden shrink-0">
+                                <img
+                                  src={`/products/${result.alternative.image_key}`}
+                                  alt={result.alternative.name_exact}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-foreground text-sm mb-1.5">
+                                {result.alternative.name_exact}
+                              </p>
+                              <ul className="space-y-1">
+                                {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
+                                  <li key={i} className="text-xs text-muted-foreground leading-relaxed">
+                                    • {reason}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -347,31 +351,41 @@ export default function Results() {
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (
-              <div className="p-6">
-                <p className="text-sm font-medium text-foreground mb-1">
-                  Aún no lo cubrimos
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {unmatchedItems.join(', ')}
-                </p>
+              <div className="bg-muted/30 rounded-2xl p-5 border border-border/40">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                    <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground text-sm mb-1">
+                      Aún no lo cubrimos
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {unmatchedItems.join(', ')}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Empty State */}
             {results.length === 0 && unmatchedItems.length > 0 && (
-              <div className="text-center py-16">
-                <h3 className="font-serif text-xl font-bold text-foreground mb-2">
+              <div className="text-center py-12">
+                <div className="w-14 h-14 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-5">
+                  <AlertCircle className="h-6 w-6 text-muted-foreground/60" />
+                </div>
+                <h3 className="font-serif font-bold text-foreground mb-2">
                   Sin coincidencias
                 </h3>
-                <p className="text-sm text-muted-foreground">
-                  No encontramos productos en nuestras categorías actuales.
+                <p className="text-sm text-muted-foreground mb-6">
+                  No encontramos productos en nuestras categorías actuales
                 </p>
               </div>
             )}
 
             {/* Closing phrase */}
             {results.length > 0 && (
-              <p className="text-center text-xs text-muted-foreground/50 py-4">
+              <p className="text-center text-sm text-muted-foreground/60 py-4">
                 Compra estos productos y no pienses más.
               </p>
             )}
@@ -381,7 +395,7 @@ export default function Results() {
 
       {/* Footer */}
       {!isLoading && (
-        <div className="px-8 py-5 bg-background">
+        <div className="px-7 py-5 border-t border-border/40 bg-background">
           <Button
             variant="hero"
             size="lg"
@@ -389,7 +403,7 @@ export default function Results() {
             onClick={() => navigate('/home')}
           >
             <RotateCcw className="h-4 w-4 mr-2" />
-            Nueva lista
+            Nueva lista de la compra
           </Button>
         </div>
       )}
