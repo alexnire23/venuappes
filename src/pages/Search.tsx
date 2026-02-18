@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search as SearchIcon, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Search as SearchIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,7 +29,6 @@ interface CategoryResult {
   alternative: Product | null;
 }
 
-// Same keyword mapping as Results
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'patatas-fritas': ['patatas', 'patata', 'fritas', 'chips', 'snacks', 'patatas fritas'],
   'yogur-natural': ['yogur', 'yogures', 'yogurt', 'yoghurt', 'natural', 'yogur natural'],
@@ -82,22 +81,16 @@ export default function SearchPage() {
 
   const findAllMatches = (q: string): CategoryResult[] => {
     if (!q.trim() || !loaded) return [];
-
     const normalized = q.toLowerCase().trim();
-
     type ScoredResult = CategoryResult & { score: number };
     const results: ScoredResult[] = [];
 
     for (const [slug, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
       let bestScore = 0;
       for (const kw of keywords) {
-        if (normalized === kw) {
-          bestScore = Math.max(bestScore, 3);
-        } else if (kw.includes(normalized)) {
-          bestScore = Math.max(bestScore, 2);
-        } else if (normalized.includes(kw)) {
-          bestScore = Math.max(bestScore, 1);
-        }
+        if (normalized === kw) bestScore = Math.max(bestScore, 3);
+        else if (kw.includes(normalized)) bestScore = Math.max(bestScore, 2);
+        else if (normalized.includes(kw)) bestScore = Math.max(bestScore, 1);
       }
       if (bestScore > 0) {
         const cat = categories.find(c => c.slug === slug);
@@ -111,7 +104,6 @@ export default function SearchPage() {
         });
       }
     }
-
     return results.sort((a, b) => b.score - a.score);
   };
 
@@ -122,7 +114,6 @@ export default function SearchPage() {
   };
 
   const results = hasSearched ? findAllMatches(searchedQuery) : [];
-
   const showSuggestions = !hasSearched && !query.trim();
   const showEmpty = hasSearched && results.length === 0 && loaded;
 
@@ -136,26 +127,26 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
+      <header className="px-8 py-5 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="font-serif text-lg font-bold text-foreground">Buscar producto</h1>
       </header>
 
-      {/* Search bar + subtitle */}
-      <div className="px-7 pt-7 pb-2 space-y-4">
+      {/* Search bar */}
+      <div className="px-8 pb-2 space-y-4">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Escribe una categoría o producto (ej: yogur, tomate frito, patatas fritas…) y te diremos qué comprar.
+          Escribe una categoría o producto y te diremos qué comprar.
         </p>
         <div className="relative">
-          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
           <Input
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && query.trim() && handleSearch()}
             placeholder="Buscar…"
-            className="pl-11 h-12 rounded-xl bg-card border-border/50 shadow-sm text-base"
+            className="pl-11 h-13 rounded-lg bg-card border-border/40 text-base"
             autoFocus
           />
         </div>
@@ -163,7 +154,7 @@ export default function SearchPage() {
         <Button
           onClick={handleSearch}
           disabled={!query.trim()}
-          className="w-full mt-1"
+          className="w-full"
           size="lg"
         >
           Ver recomendación
@@ -171,10 +162,10 @@ export default function SearchPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-7 py-5">
+      <div className="flex-1 overflow-y-auto px-8 py-6">
         {/* Suggestion chips */}
         {showSuggestions && (
-          <div className="flex flex-wrap gap-2.5 animate-fade-in">
+          <div className="flex flex-wrap gap-2 animate-fade-in">
             {SUGGESTION_CHIPS.map(chip => (
               <button
                 key={chip.query}
@@ -184,7 +175,7 @@ export default function SearchPage() {
                   setHasSearched(true);
                   setExpandedCards(new Set());
                 }}
-                className="px-4 py-2 rounded-full text-sm font-medium bg-card text-muted-foreground border border-border/50 hover:border-primary/30 hover:text-foreground transition-all"
+                className="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-muted-foreground border border-border/50 hover:border-foreground/20 hover:text-foreground transition-all"
               >
                 {chip.label}
               </button>
@@ -195,50 +186,45 @@ export default function SearchPage() {
         {/* Empty state */}
         {showEmpty && (
           <div className="text-center py-20 animate-fade-in">
-            <div className="w-14 h-14 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-5">
-              <SearchIcon className="h-6 w-6 text-muted-foreground/60" />
-            </div>
             <p className="text-sm text-muted-foreground">
               Todavía no tenemos recomendaciones para esa búsqueda.
             </p>
           </div>
         )}
 
-        {/* Results — all matches */}
+        {/* Results */}
         {results.length > 0 && (
-          <div className="space-y-5 animate-fade-in">
+          <div className="space-y-6 animate-fade-in">
             {results.map((result, index) => (
               <div
                 key={result.categorySlug}
-                className="bg-card rounded-2xl border border-border/40 overflow-hidden animate-slide-up"
+                className="bg-card rounded-xl overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
               >
-                {/* No acceptable product */}
                 {!result.primary && (
-                  <div className="p-5">
-                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
+                  <div className="p-6">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
                       {result.categoryName}
                     </p>
-                    <div className="flex items-start gap-3 bg-muted/40 rounded-xl p-4">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                        <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
-                      </div>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        En esta categoría no hay ahora mismo una opción claramente buena. Preferimos no recomendar antes que hacerlo mal.
-                      </p>
-                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      En esta categoría no hay una opción claramente buena.
+                    </p>
                   </div>
                 )}
 
-                {/* Primary Product */}
                 {result.primary && (
-                  <div className="p-5">
-                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
-                      {result.categoryName}
-                    </p>
+                  <div>
+                    <div className="px-6 pt-6 flex items-center justify-between">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+                        {result.categoryName}
+                      </p>
+                      <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em] border border-primary/25 px-2 py-0.5 rounded">
+                        Recomendado
+                      </span>
+                    </div>
 
                     {result.primary.image_key && (
-                      <div className="w-full aspect-[4/3] rounded-xl bg-muted/50 mb-5 overflow-hidden">
+                      <div className="mt-4 mx-6 aspect-[3/2] rounded-lg bg-muted/30 overflow-hidden">
                         <img
                           src={`/products/${result.primary.image_key}`}
                           alt={result.primary.name_exact}
@@ -250,68 +236,64 @@ export default function SearchPage() {
                       </div>
                     )}
 
-                    <h3 className="font-serif text-xl font-bold text-foreground mb-2.5 leading-tight">
-                      {result.primary.name_exact}
-                    </h3>
+                    <div className="px-6 pt-5 pb-6">
+                      <h3 className="font-serif text-2xl font-bold text-foreground mb-5 leading-tight">
+                        {result.primary.name_exact}
+                      </h3>
 
-                    <span className="inline-block text-[10px] font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full mb-4 uppercase tracking-widest">
-                      Recomendado
-                    </span>
-
-                    <ul className="space-y-2.5">
-                      {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2.5 leading-relaxed">
-                          <span className="text-primary/50 mt-0.5 text-xs">•</span>
-                          {reason}
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Alternative */}
-                    {result.alternative && (
-                      <div className="mt-5 pt-5 border-t border-border/40">
-                        <button
-                          onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
-                        >
-                          <span>Ver alternativa (opcional)</span>
-                          {expandedCards.has(result.categorySlug) ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                        </button>
-
-                        {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-4 flex gap-3.5 animate-fade-in">
-                            {result.alternative.image_key && (
-                              <div className="w-20 h-20 rounded-xl bg-muted/50 overflow-hidden shrink-0">
-                                <img
-                                  src={`/products/${result.alternative.image_key}`}
-                                  alt={result.alternative.name_exact}
-                                  className="w-full h-full object-cover"
-                                  onError={e => {
-                                    (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-                                  }}
-                                />
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-foreground text-sm mb-1.5">
-                                {result.alternative.name_exact}
-                              </p>
-                              <ul className="space-y-1">
-                                {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground leading-relaxed">
-                                    • {reason}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        )}
+                      <div className="space-y-2.5">
+                        {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
+                          <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">
+                            — {reason}
+                          </p>
+                        ))}
                       </div>
-                    )}
+
+                      {result.alternative && (
+                        <div className="mt-6 pt-5 border-t border-border/50">
+                          <button
+                            onClick={() => toggleCard(result.categorySlug)}
+                            className="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            <span>Ver alternativa</span>
+                            {expandedCards.has(result.categorySlug) ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
+                          </button>
+
+                          {expandedCards.has(result.categorySlug) && (
+                            <div className="mt-4 flex gap-4 animate-fade-in">
+                              {result.alternative.image_key && (
+                                <div className="w-20 h-20 rounded-lg bg-muted/30 overflow-hidden shrink-0">
+                                  <img
+                                    src={`/products/${result.alternative.image_key}`}
+                                    alt={result.alternative.name_exact}
+                                    className="w-full h-full object-cover"
+                                    onError={e => {
+                                      (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-foreground text-sm mb-2">
+                                  {result.alternative.name_exact}
+                                </p>
+                                <div className="space-y-1">
+                                  {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
+                                    <p key={i} className="text-xs text-muted-foreground leading-relaxed">
+                                      — {reason}
+                                    </p>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

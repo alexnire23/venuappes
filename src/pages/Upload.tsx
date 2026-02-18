@@ -18,20 +18,15 @@ export default function Upload() {
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
-      };
+      reader.onloadend = () => setSelectedImage(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
   const handleProcess = async () => {
     if (!selectedImage) return;
-
     setIsProcessing(true);
-
     await new Promise(resolve => setTimeout(resolve, 1500));
-
     navigate('/confirm', {
       state: {
         inputType: 'image',
@@ -43,20 +38,17 @@ export default function Upload() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
-      {/* Header */}
-      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
+      <header className="px-8 py-5 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="font-serif text-lg font-bold text-foreground">Subir foto</h1>
       </header>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col px-7 py-7">
+      <div className="flex-1 flex flex-col px-8 py-6">
         {selectedImage ? (
           <div className="flex-1 flex flex-col animate-fade-in">
-            {/* Preview */}
-            <div className="relative flex-1 rounded-2xl overflow-hidden bg-muted/50 mb-7">
+            <div className="relative flex-1 rounded-lg overflow-hidden bg-muted/30 mb-6">
               <img
                 src={selectedImage}
                 alt="Lista de la compra"
@@ -72,7 +64,6 @@ export default function Upload() {
               </Button>
             </div>
 
-            {/* Process Button */}
             <Button
               variant="hero"
               size="xl"
@@ -83,7 +74,7 @@ export default function Upload() {
               {isProcessing ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Analizando imagen...
+                  Analizando imagen…
                 </>
               ) : (
                 'Analizar lista'
@@ -102,11 +93,10 @@ export default function Upload() {
             />
 
             <div className="w-full max-w-sm space-y-5">
-              <p className="text-center text-muted-foreground text-sm mb-10 leading-relaxed">
-                Haz una foto de tu lista (papel, notas o impresa)
+              <p className="text-center text-muted-foreground text-sm mb-8 leading-relaxed">
+                Haz una foto de tu lista de la compra.
               </p>
 
-              {/* Camera Button */}
               <Button
                 variant="hero"
                 size="xl"
@@ -117,7 +107,6 @@ export default function Upload() {
                 Hacer foto
               </Button>
 
-              {/* Gallery Button */}
               <Button
                 variant="outline"
                 size="xl"
