@@ -44,19 +44,19 @@ export default function Upload() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
+      <header className="px-8 py-5 flex items-center gap-3 border-b border-border/30">
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-serif text-lg font-bold text-foreground">Subir foto</h1>
+        <h1 className="font-serif text-base font-semibold text-foreground">Subir foto</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-7 py-7">
+      <div className="flex-1 flex flex-col px-8 py-8">
         {selectedImage ? (
           <div className="flex-1 flex flex-col animate-fade-in">
             {/* Preview */}
-            <div className="relative flex-1 rounded-2xl overflow-hidden bg-muted/50 mb-7">
+            <div className="relative flex-1 rounded-2xl overflow-hidden bg-secondary/30 mb-8">
               <img
                 src={selectedImage}
                 alt="Lista de la compra"
@@ -102,7 +102,7 @@ export default function Upload() {
             />
 
             <div className="w-full max-w-sm space-y-5">
-              <p className="text-center text-muted-foreground text-sm mb-10 leading-relaxed">
+              <p className="text-center text-muted-foreground text-sm mb-12 leading-relaxed">
                 Haz una foto de tu lista (papel, notas o impresa)
               </p>
 
@@ -110,10 +110,10 @@ export default function Upload() {
               <Button
                 variant="hero"
                 size="xl"
-                className="w-full h-auto py-7"
+                className="w-full h-16"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Camera className="h-6 w-6 mr-3" />
+                <Camera className="h-5 w-5 mr-2" />
                 Hacer foto
               </Button>
 

@@ -81,34 +81,33 @@ export default function Confirm() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-7 py-5 flex flex-col gap-3 border-b border-border/40">
+      <header className="px-8 py-5 flex flex-col gap-3 border-b border-border/30">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-serif text-lg font-bold text-foreground flex-1">Confirmar lista</h1>
+          <h1 className="font-serif text-base font-semibold text-foreground flex-1">Confirmar lista</h1>
         </div>
         {ENABLE_AUTH && <FreeUsesIndicator />}
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-7 py-7">
+      <div className="flex-1 flex flex-col px-8 py-8">
         <div className="flex-1 animate-fade-in">
-          <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
             Hemos detectado estos productos. Ajusta solo si falta algo.
           </p>
 
           {/* Items as Chips */}
-          <div className="flex flex-wrap gap-2.5 mb-7">
+          <div className="flex flex-wrap gap-2.5 mb-8">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 bg-card rounded-full pl-4 pr-2 py-2 border border-border/40"
-                style={{ boxShadow: 'var(--shadow-sm)' }}
+                className="flex items-center gap-2 bg-card rounded-full pl-4 pr-2 py-2 border border-border/30"
               >
                 <span className="text-foreground text-sm">{item}</span>
                 <button
-                  className="w-6 h-6 rounded-full bg-muted/60 flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors"
                   onClick={() => handleRemoveItem(index)}
                 >
                   <X className="h-3 w-3" />
@@ -118,18 +117,18 @@ export default function Confirm() {
           </div>
 
           {/* Add Item */}
-          <div className="flex gap-2.5 mb-8">
+          <div className="flex gap-2.5 mb-10">
             <Input
               placeholder="Añadir producto..."
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-              className="flex-1 h-12 rounded-xl bg-card border-border/50 shadow-sm"
+              className="flex-1 h-12 rounded-2xl bg-card border-border/30 px-5"
             />
             <Button
               variant="secondary"
               size="icon"
-              className="h-12 w-12 shrink-0 rounded-xl"
+              className="h-12 w-12 shrink-0 rounded-2xl"
               onClick={handleAddItem}
             >
               <Plus className="h-5 w-5" />

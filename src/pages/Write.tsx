@@ -43,26 +43,26 @@ export default function Write() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
+      <header className="px-8 py-5 flex items-center gap-3 border-b border-border/30">
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-serif text-lg font-bold text-foreground">Escribir lista</h1>
+        <h1 className="font-serif text-base font-semibold text-foreground">Escribir lista</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-7 py-7">
+      <div className="flex-1 flex flex-col px-8 py-8">
         <div className="flex-1 flex flex-col animate-fade-in">
-          <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
             Escribe o pega tu lista. Un producto por línea.
           </p>
 
-          <div className="flex-1 mb-7">
+          <div className="flex-1 mb-8">
             <Textarea
               placeholder="Ejemplo:&#10;patatas fritas&#10;yogur natural&#10;tomate frito&#10;galletas&#10;huevos"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="h-full min-h-[200px] resize-none rounded-xl text-base bg-card border-border/50 shadow-sm"
+              className="h-full min-h-[220px] resize-none rounded-2xl text-base bg-card border-border/30 p-5 placeholder:text-muted-foreground/40"
             />
           </div>
 
