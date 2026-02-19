@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { RotateCcw, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -216,23 +216,23 @@ export default function Results() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-7 py-5 flex items-center gap-3 border-b border-border/40">
-        <h1 className="font-serif text-lg font-bold text-foreground">Recomendaciones</h1>
+      <header className="px-8 py-5 text-center border-b border-border/30">
+        <h1 className="font-serif text-base font-semibold text-foreground">Recomendaciones</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-7 py-7">
+      <div className="flex-1 overflow-y-auto px-8 py-8">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
-            <Loader2 className="h-10 w-10 animate-spin text-primary mb-5" />
+          <div className="flex flex-col items-center justify-center py-28 animate-fade-in">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-5" />
             <p className="text-muted-foreground text-sm">Analizando tu lista...</p>
           </div>
         ) : (
-          <div className="space-y-7 animate-fade-in">
+          <div className="space-y-8 animate-fade-in">
             {/* Global Header */}
             {results.length > 0 && (
-              <div className="text-center mb-8">
-                <h2 className="font-serif text-2xl font-bold text-foreground mb-2">
+              <div className="mb-10">
+                <h2 className="font-serif text-2xl font-bold text-foreground mb-2 leading-tight">
                   Compra esto en Mercadona
                 </h2>
                 <p className="text-sm text-muted-foreground">
@@ -245,66 +245,65 @@ export default function Results() {
             {results.map((result, index) => (
               <div
                 key={result.categorySlug}
-                className="bg-card rounded-2xl border border-border/40 overflow-hidden animate-slide-up"
+                className="bg-card rounded-2xl border border-border/30 overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
               >
                 {!result.primary && (
-                  <div className="p-5">
-                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
+                  <div className="p-6">
+                    <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-4">
                       {result.categoryName}
                     </p>
-                    <div className="flex items-start gap-3 bg-muted/40 rounded-xl p-4">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                        <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
-                      </div>
+                    <div className="bg-secondary/50 rounded-xl p-5">
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        No hay ningún producto aceptable en Mercadona
+                        No hay ningún producto aceptable en Mercadona en esta categoría. Preferimos no recomendar antes que hacerlo mal.
                       </p>
                     </div>
                   </div>
                 )}
 
                 {result.primary && (
-                  <div className="p-5">
-                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-4">
+                  <div className="p-6">
+                    <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-5">
                       {result.categoryName}
                     </p>
 
-                    {result.primary.image_key && (
-                      <div className="w-full aspect-[4/3] rounded-xl bg-muted/50 mb-5 overflow-hidden">
-                        <img
-                          src={`/products/${result.primary.image_key}`}
-                          alt={result.primary.name_exact}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-                          }}
-                        />
+                    <div className="flex gap-5 mb-5">
+                      {result.primary.image_key && (
+                        <div className="w-28 h-28 rounded-xl bg-secondary/30 overflow-hidden shrink-0">
+                          <img
+                            src={`/products/${result.primary.image_key}`}
+                            alt={result.primary.name_exact}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-serif text-lg font-bold text-foreground mb-2 leading-snug">
+                          {result.primary.name_exact}
+                        </h3>
+                        <span className="inline-block text-[9px] font-bold text-primary border border-primary/30 px-2 py-0.5 rounded uppercase tracking-[0.12em]">
+                          Recomendado
+                        </span>
                       </div>
-                    )}
+                    </div>
 
-                    <h3 className="font-serif text-xl font-bold text-foreground mb-2.5 leading-tight">
-                      {result.primary.name_exact}
-                    </h3>
-
-                    <span className="inline-block text-[10px] font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full mb-4 uppercase tracking-widest">
-                      Recomendado
-                    </span>
-
-                    <ul className="space-y-2.5">
+                    <ul className="space-y-3 pl-1">
                       {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2.5 leading-relaxed">
-                          <span className="text-primary/50 mt-0.5 text-xs">•</span>
+                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-3 leading-relaxed">
+                          <span className="text-muted-foreground/30 mt-0.5">—</span>
                           {reason}
                         </li>
                       ))}
                     </ul>
 
                     {result.alternative && (
-                      <div className="mt-5 pt-5 border-t border-border/40">
+                      <div className="mt-6 pt-5 border-t border-border/30">
                         <button
                           onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+                          className="w-full flex items-center justify-between text-sm text-muted-foreground/60 hover:text-foreground transition-colors"
                         >
                           <span>Ver alternativa (opcional)</span>
                           {expandedCards.has(result.categorySlug) ? (
@@ -315,9 +314,9 @@ export default function Results() {
                         </button>
 
                         {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-4 flex gap-3.5 animate-fade-in">
+                          <div className="mt-4 flex gap-4 animate-fade-in">
                             {result.alternative.image_key && (
-                              <div className="w-20 h-20 rounded-xl bg-muted/50 overflow-hidden shrink-0">
+                              <div className="w-16 h-16 rounded-lg bg-secondary/30 overflow-hidden shrink-0">
                                 <img
                                   src={`/products/${result.alternative.image_key}`}
                                   alt={result.alternative.name_exact}
@@ -335,7 +334,7 @@ export default function Results() {
                               <ul className="space-y-1">
                                 {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
                                   <li key={i} className="text-xs text-muted-foreground leading-relaxed">
-                                    • {reason}
+                                    — {reason}
                                   </li>
                                 ))}
                               </ul>
@@ -351,29 +350,19 @@ export default function Results() {
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (
-              <div className="bg-muted/30 rounded-2xl p-5 border border-border/40">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                    <AlertCircle className="h-4 w-4 text-muted-foreground/60" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground text-sm mb-1">
-                      Aún no lo cubrimos
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {unmatchedItems.join(', ')}
-                    </p>
-                  </div>
-                </div>
+              <div className="bg-secondary/30 rounded-2xl p-6 border border-border/30">
+                <p className="font-medium text-foreground text-sm mb-1">
+                  Aún no lo cubrimos
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {unmatchedItems.join(', ')}
+                </p>
               </div>
             )}
 
             {/* Empty State */}
             {results.length === 0 && unmatchedItems.length > 0 && (
-              <div className="text-center py-12">
-                <div className="w-14 h-14 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-5">
-                  <AlertCircle className="h-6 w-6 text-muted-foreground/60" />
-                </div>
+              <div className="text-center py-16">
                 <h3 className="font-serif font-bold text-foreground mb-2">
                   Sin coincidencias
                 </h3>
@@ -385,7 +374,7 @@ export default function Results() {
 
             {/* Closing phrase */}
             {results.length > 0 && (
-              <p className="text-center text-sm text-muted-foreground/60 py-4">
+              <p className="text-center text-xs text-muted-foreground/40 py-4 tracking-wide">
                 Compra estos productos y no pienses más.
               </p>
             )}
@@ -395,7 +384,7 @@ export default function Results() {
 
       {/* Footer */}
       {!isLoading && (
-        <div className="px-7 py-5 border-t border-border/40 bg-background">
+        <div className="px-8 py-5 border-t border-border/30 bg-background">
           <Button
             variant="hero"
             size="lg"
