@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 import Auth from "./pages/Auth";
 import SupermarketSelect from "./pages/SupermarketSelect";
-import Onboarding from "./pages/Onboarding";
+
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Write from "./pages/Write";
@@ -32,7 +32,7 @@ const App = () => (
             <Route path="/" element={<Navigate to="/select" replace />} />
             <Route path="/select" element={<SupermarketSelect />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/onboarding" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/write" element={<Write />} />

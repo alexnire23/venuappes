@@ -26,12 +26,12 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
       <header className="px-8 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <button onClick={() => navigate('/select')} className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
             <ShoppingCart className="h-4 w-4 text-primary" />
           </div>
-          <span className="font-serif text-base font-semibold text-foreground">Compra Real</span>
-        </div>
+          <span className="font-serif text-base font-semibold text-foreground group-hover:text-primary transition-colors">Compra Real</span>
+        </button>
         {ENABLE_AUTH && user && (
           <Button variant="ghost" size="icon" onClick={handleLogout}>
             <LogOut className="h-5 w-5" />

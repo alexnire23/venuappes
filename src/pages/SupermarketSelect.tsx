@@ -68,7 +68,7 @@ export default function SupermarketSelect() {
             variant="hero"
             size="xl"
             className="w-full h-16 text-lg"
-            onClick={() => navigate('/onboarding')}
+            onClick={() => navigate('/home')}
           >
             Continuar
           </Button>
