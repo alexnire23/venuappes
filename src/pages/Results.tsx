@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { ImageLightbox } from '@/components/ImageLightbox';
 
 interface LocationState {
   inputType: 'image' | 'text';
@@ -59,6 +60,8 @@ export default function Results() {
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [hasProcessed, setHasProcessed] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = useState('');
 
   // Recover state from sessionStorage if coming from auth
   useEffect(() => {
@@ -217,25 +220,25 @@ export default function Results() {
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
       <header className="px-8 py-5 text-center border-b border-border/30">
-        <h1 className="font-serif text-base font-semibold text-foreground">Recomendaciones</h1>
+        <h1 className="font-serif text-lg font-semibold text-foreground">Recomendaciones</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-8 py-8">
+      <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-8">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-28 animate-fade-in">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-5" />
-            <p className="text-muted-foreground text-sm">Analizando tu lista...</p>
+            <p className="text-muted-foreground text-base">Analizando tu lista...</p>
           </div>
         ) : (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-10 animate-fade-in">
             {/* Global Header */}
             {results.length > 0 && (
-              <div className="mb-10">
-                <h2 className="font-serif text-2xl font-bold text-foreground mb-2 leading-tight">
+              <div className="mb-12">
+                <h2 className="font-serif text-[1.75rem] font-bold text-foreground mb-3 leading-tight">
                   Compra esto en Mercadona
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   Basado en ingredientes simples y poco procesados.
                 </p>
               </div>
@@ -249,12 +252,12 @@ export default function Results() {
                 style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
               >
                 {!result.primary && (
-                  <div className="p-6">
-                    <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-4">
+                  <div className="p-7">
+                    <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-4">
                       {result.categoryName}
                     </p>
                     <div className="bg-secondary/50 rounded-xl p-5">
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-[15px] text-muted-foreground leading-relaxed">
                         No hay ningún producto aceptable en Mercadona en esta categoría. Preferimos no recomendar antes que hacerlo mal.
                       </p>
                     </div>
@@ -262,14 +265,20 @@ export default function Results() {
                 )}
 
                 {result.primary && (
-                  <div className="p-6">
-                    <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-5">
+                  <div className="p-7">
+                    <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-6">
                       {result.categoryName}
                     </p>
 
-                    <div className="flex gap-5 mb-5">
+                    <div className="flex gap-5 mb-6">
                       {result.primary.image_key && (
-                        <div className="w-28 h-28 rounded-xl bg-secondary/30 overflow-hidden shrink-0">
+                        <button
+                          onClick={() => {
+                            setLightboxSrc(`/products/${result.primary!.image_key}`);
+                            setLightboxAlt(result.primary!.name_exact);
+                          }}
+                          className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
+                        >
                           <img
                             src={`/products/${result.primary.image_key}`}
                             alt={result.primary.name_exact}
@@ -278,21 +287,21 @@ export default function Results() {
                               (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                             }}
                           />
-                        </div>
+                        </button>
                       )}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-serif text-lg font-bold text-foreground mb-2 leading-snug">
+                        <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-snug">
                           {result.primary.name_exact}
                         </h3>
-                        <span className="inline-block text-[9px] font-bold text-primary border border-primary/30 px-2 py-0.5 rounded uppercase tracking-[0.12em]">
+                        <span className="inline-block text-[10px] font-bold text-primary border border-primary/30 px-2.5 py-0.5 rounded uppercase tracking-[0.12em]">
                           Recomendado
                         </span>
                       </div>
                     </div>
 
-                    <ul className="space-y-3 pl-1">
+                    <ul className="space-y-3.5 pl-1">
                       {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-3 leading-relaxed">
+                        <li key={i} className="text-[15px] text-muted-foreground flex items-start gap-3 leading-relaxed">
                           <span className="text-muted-foreground/30 mt-0.5">—</span>
                           {reason}
                         </li>
@@ -300,10 +309,10 @@ export default function Results() {
                     </ul>
 
                     {result.alternative && (
-                      <div className="mt-6 pt-5 border-t border-border/30">
+                      <div className="mt-7 pt-6 border-t border-border/30">
                         <button
                           onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-sm text-muted-foreground/60 hover:text-foreground transition-colors"
+                          className="w-full flex items-center justify-between text-[15px] text-muted-foreground/60 hover:text-foreground transition-colors"
                         >
                           <span>Ver alternativa (opcional)</span>
                           {expandedCards.has(result.categorySlug) ? (
@@ -314,9 +323,15 @@ export default function Results() {
                         </button>
 
                         {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-4 flex gap-4 animate-fade-in">
+                          <div className="mt-5 flex gap-4 animate-fade-in">
                             {result.alternative.image_key && (
-                              <div className="w-16 h-16 rounded-lg bg-secondary/30 overflow-hidden shrink-0">
+                              <button
+                                onClick={() => {
+                                  setLightboxSrc(`/products/${result.alternative!.image_key}`);
+                                  setLightboxAlt(result.alternative!.name_exact);
+                                }}
+                                className="w-20 h-20 rounded-lg bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
+                              >
                                 <img
                                   src={`/products/${result.alternative.image_key}`}
                                   alt={result.alternative.name_exact}
@@ -325,15 +340,15 @@ export default function Results() {
                                     (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                                   }}
                                 />
-                              </div>
+                              </button>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-foreground text-sm mb-1.5">
+                              <p className="font-medium text-foreground text-base mb-2">
                                 {result.alternative.name_exact}
                               </p>
-                              <ul className="space-y-1">
+                              <ul className="space-y-1.5">
                                 {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground leading-relaxed">
+                                  <li key={i} className="text-sm text-muted-foreground leading-relaxed">
                                     — {reason}
                                   </li>
                                 ))}
@@ -350,11 +365,11 @@ export default function Results() {
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (
-              <div className="bg-secondary/30 rounded-2xl p-6 border border-border/30">
-                <p className="font-medium text-foreground text-sm mb-1">
+              <div className="bg-secondary/30 rounded-2xl p-7 border border-border/30">
+                <p className="font-medium text-foreground text-base mb-1">
                   Aún no lo cubrimos
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {unmatchedItems.join(', ')}
                 </p>
               </div>
@@ -363,10 +378,10 @@ export default function Results() {
             {/* Empty State */}
             {results.length === 0 && unmatchedItems.length > 0 && (
               <div className="text-center py-16">
-                <h3 className="font-serif font-bold text-foreground mb-2">
+                <h3 className="font-serif text-xl font-bold text-foreground mb-2">
                   Sin coincidencias
                 </h3>
-                <p className="text-sm text-muted-foreground mb-6">
+                <p className="text-base text-muted-foreground mb-6">
                   No encontramos productos en nuestras categorías actuales
                 </p>
               </div>
@@ -396,6 +411,13 @@ export default function Results() {
           </Button>
         </div>
       )}
+
+      <ImageLightbox
+        src={lightboxSrc}
+        alt={lightboxAlt}
+        open={!!lightboxSrc}
+        onOpenChange={(open) => { if (!open) setLightboxSrc(null); }}
+      />
     </div>
   );
 }

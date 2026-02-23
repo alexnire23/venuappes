@@ -4,6 +4,7 @@ import { ArrowLeft, Search as SearchIcon, ChevronDown, ChevronUp } from 'lucide-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { ImageLightbox } from '@/components/ImageLightbox';
 
 interface Product {
   id: string;
@@ -66,6 +67,8 @@ export default function SearchPage() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [loaded, setLoaded] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,12 +141,12 @@ export default function SearchPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-serif text-base font-semibold text-foreground">Buscar producto</h1>
+        <h1 className="font-serif text-lg font-semibold text-foreground">Buscar producto</h1>
       </header>
 
       {/* Search bar */}
-      <div className="px-8 pt-8 pb-3 space-y-5">
-        <p className="text-sm text-muted-foreground leading-relaxed">
+      <div className="px-6 sm:px-8 pt-8 pb-3 space-y-5">
+        <p className="text-base text-muted-foreground leading-relaxed">
           Escribe una categoría o producto y te diremos qué comprar.
         </p>
         <div className="relative">
@@ -170,7 +173,7 @@ export default function SearchPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+      <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-6">
         {/* Suggestion chips */}
         {showSuggestions && (
           <div className="flex flex-wrap gap-2.5 animate-fade-in">
@@ -183,7 +186,7 @@ export default function SearchPage() {
                   setHasSearched(true);
                   setExpandedCards(new Set());
                 }}
-                className="px-4 py-2 rounded-full text-sm text-muted-foreground bg-card border border-border/30 hover:border-primary/20 hover:text-foreground transition-all"
+                className="px-4 py-2.5 rounded-full text-[15px] text-muted-foreground bg-card border border-border/30 hover:border-primary/20 hover:text-foreground transition-all"
               >
                 {chip.label}
               </button>
@@ -194,7 +197,7 @@ export default function SearchPage() {
         {/* Empty state */}
         {showEmpty && (
           <div className="text-center py-24 animate-fade-in">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Todavía no tenemos recomendaciones para esa búsqueda.
             </p>
           </div>
@@ -202,7 +205,7 @@ export default function SearchPage() {
 
         {/* Results */}
         {results.length > 0 && (
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-8 animate-fade-in">
             {results.map((result, index) => (
               <div
                 key={result.categorySlug}
@@ -211,12 +214,12 @@ export default function SearchPage() {
               >
                 {/* No acceptable product */}
                 {!result.primary && (
-                  <div className="p-6">
-                    <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-4">
+                  <div className="p-7">
+                    <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-4">
                       {result.categoryName}
                     </p>
                     <div className="bg-secondary/50 rounded-xl p-5">
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-[15px] text-muted-foreground leading-relaxed">
                         En esta categoría no hay ahora mismo una opción claramente buena. Preferimos no recomendar antes que hacerlo mal.
                       </p>
                     </div>
@@ -225,14 +228,20 @@ export default function SearchPage() {
 
                 {/* Primary Product */}
                 {result.primary && (
-                  <div className="p-6">
-                    <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-5">
+                  <div className="p-7">
+                    <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-6">
                       {result.categoryName}
                     </p>
 
-                    <div className="flex gap-5 mb-5">
+                    <div className="flex gap-5 mb-6">
                       {result.primary.image_key && (
-                        <div className="w-28 h-28 rounded-xl bg-secondary/30 overflow-hidden shrink-0">
+                        <button
+                          onClick={() => {
+                            setLightboxSrc(`/products/${result.primary!.image_key}`);
+                            setLightboxAlt(result.primary!.name_exact);
+                          }}
+                          className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
+                        >
                           <img
                             src={`/products/${result.primary.image_key}`}
                             alt={result.primary.name_exact}
@@ -241,21 +250,21 @@ export default function SearchPage() {
                               (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                             }}
                           />
-                        </div>
+                        </button>
                       )}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-serif text-lg font-bold text-foreground mb-2 leading-snug">
+                        <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-snug">
                           {result.primary.name_exact}
                         </h3>
-                        <span className="inline-block text-[9px] font-bold text-primary border border-primary/30 px-2 py-0.5 rounded uppercase tracking-[0.12em]">
+                        <span className="inline-block text-[10px] font-bold text-primary border border-primary/30 px-2.5 py-0.5 rounded uppercase tracking-[0.12em]">
                           Recomendado
                         </span>
                       </div>
                     </div>
 
-                    <ul className="space-y-3 pl-1">
+                    <ul className="space-y-3.5 pl-1">
                       {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-3 leading-relaxed">
+                        <li key={i} className="text-[15px] text-muted-foreground flex items-start gap-3 leading-relaxed">
                           <span className="text-muted-foreground/30 mt-0.5">—</span>
                           {reason}
                         </li>
@@ -264,10 +273,10 @@ export default function SearchPage() {
 
                     {/* Alternative */}
                     {result.alternative && (
-                      <div className="mt-6 pt-5 border-t border-border/30">
+                      <div className="mt-7 pt-6 border-t border-border/30">
                         <button
                           onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-sm text-muted-foreground/60 hover:text-foreground transition-colors"
+                          className="w-full flex items-center justify-between text-[15px] text-muted-foreground/60 hover:text-foreground transition-colors"
                         >
                           <span>Ver alternativa (opcional)</span>
                           {expandedCards.has(result.categorySlug) ? (
@@ -278,9 +287,15 @@ export default function SearchPage() {
                         </button>
 
                         {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-4 flex gap-4 animate-fade-in">
+                          <div className="mt-5 flex gap-4 animate-fade-in">
                             {result.alternative.image_key && (
-                              <div className="w-16 h-16 rounded-lg bg-secondary/30 overflow-hidden shrink-0">
+                              <button
+                                onClick={() => {
+                                  setLightboxSrc(`/products/${result.alternative!.image_key}`);
+                                  setLightboxAlt(result.alternative!.name_exact);
+                                }}
+                                className="w-20 h-20 rounded-lg bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
+                              >
                                 <img
                                   src={`/products/${result.alternative.image_key}`}
                                   alt={result.alternative.name_exact}
@@ -289,15 +304,15 @@ export default function SearchPage() {
                                     (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                                   }}
                                 />
-                              </div>
+                              </button>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-foreground text-sm mb-1.5">
+                              <p className="font-medium text-foreground text-base mb-2">
                                 {result.alternative.name_exact}
                               </p>
-                              <ul className="space-y-1">
+                              <ul className="space-y-1.5">
                                 {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground leading-relaxed">
+                                  <li key={i} className="text-sm text-muted-foreground leading-relaxed">
                                     — {reason}
                                   </li>
                                 ))}
@@ -314,6 +329,13 @@ export default function SearchPage() {
           </div>
         )}
       </div>
+
+      <ImageLightbox
+        src={lightboxSrc}
+        alt={lightboxAlt}
+        open={!!lightboxSrc}
+        onOpenChange={(open) => { if (!open) setLightboxSrc(null); }}
+      />
     </div>
   );
 }
