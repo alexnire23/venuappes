@@ -46,10 +46,10 @@ export default function Home() {
       <div className="flex-1 flex flex-col px-8 pt-12 pb-8">
         <div className="flex-1 flex flex-col items-center">
           <div className="w-full max-w-sm animate-slide-up">
-            <h2 className="font-serif text-3xl font-bold text-foreground text-center mb-2 leading-tight tracking-tight">
+            <h2 className="font-serif text-[2rem] font-bold text-foreground text-center mb-3 leading-tight tracking-tight">
               Sube tu lista de la compra
             </h2>
-            <p className="text-center text-muted-foreground text-sm mb-12">
+            <p className="text-center text-muted-foreground text-base mb-14">
               Te decimos qué producto comprar.
             </p>
 
@@ -65,27 +65,27 @@ export default function Home() {
             </Button>
 
             {/* Secondary Actions — editorial with arrow */}
-            <div className="space-y-4">
+            <div className="space-y-5">
               <button
                 onClick={() => navigate('/write')}
-                className="w-full flex items-center justify-between text-[15px] text-muted-foreground hover:text-foreground transition-colors group"
+                className="w-full flex items-center justify-between text-[17px] text-foreground/70 hover:text-foreground transition-colors group py-1"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-border">—</span>
                   <span>Escribir lista manualmente</span>
                 </div>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowRight className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity" />
               </button>
 
               <button
                 onClick={() => navigate('/search')}
-                className="w-full flex items-center justify-between text-[15px] text-muted-foreground hover:text-foreground transition-colors group"
+                className="w-full flex items-center justify-between text-[17px] text-foreground/70 hover:text-foreground transition-colors group py-1"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-border">—</span>
                   <span>Buscar producto</span>
                 </div>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowRight className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity" />
               </button>
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function Home() {
 
         {/* Mercadona Badge */}
         <div className="text-center pt-8">
-          <span className="text-[11px] text-muted-foreground/40 tracking-widest uppercase">
+          <span className="text-xs text-muted-foreground/50 tracking-widest uppercase">
             Solo Mercadona por ahora
           </span>
         </div>
