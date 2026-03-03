@@ -58,8 +58,12 @@ const SUGGESTION_CHIPS = [
   { label: 'Helados', query: 'helados' },
 ];
 
+const getImageSrc = (imageKey: string) =>
+  imageKey.startsWith('http') ? imageKey : `/products/${imageKey}`;
+
 export default function SearchPage() {
   const navigate = useNavigate();
+  const supermarket = localStorage.getItem('selectedSupermarket') ?? 'Mercadona';
   const [query, setQuery] = useState('');
   const [searchedQuery, setSearchedQuery] = useState('');
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -74,7 +78,7 @@ export default function SearchPage() {
     const fetchData = async () => {
       const [catRes, prodRes] = await Promise.all([
         supabase.from('categories').select('*').eq('active', true).order('order'),
-        supabase.from('products').select('*').eq('active', true),
+        supabase.from('products').select('*').eq('active', true).eq('supermarket', supermarket),
       ]);
       setCategories(catRes.data ?? []);
       setProducts(prodRes.data ?? []);
@@ -237,13 +241,13 @@ export default function SearchPage() {
                       {result.primary.image_key && (
                         <button
                           onClick={() => {
-                            setLightboxSrc(`/products/${result.primary!.image_key}`);
+                            setLightboxSrc(getImageSrc(result.primary!.image_key!));
                             setLightboxAlt(result.primary!.name_exact);
                           }}
                           className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
                         >
                           <img
-                            src={`/products/${result.primary.image_key}`}
+                            src={getImageSrc(result.primary.image_key!)}
                             alt={result.primary.name_exact}
                             className="w-full h-full object-cover"
                             onError={e => {
@@ -291,13 +295,13 @@ export default function SearchPage() {
                             {result.alternative.image_key && (
                               <button
                                 onClick={() => {
-                                  setLightboxSrc(`/products/${result.alternative!.image_key}`);
+                                  setLightboxSrc(getImageSrc(result.alternative!.image_key!));
                                   setLightboxAlt(result.alternative!.name_exact);
                                 }}
                                 className="w-20 h-20 rounded-lg bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
                               >
                                 <img
-                                  src={`/products/${result.alternative.image_key}`}
+                                  src={getImageSrc(result.alternative.image_key!)}
                                   alt={result.alternative.name_exact}
                                   className="w-full h-full object-cover"
                                   onError={e => {

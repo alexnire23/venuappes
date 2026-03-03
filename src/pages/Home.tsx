@@ -91,10 +91,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Mercadona Badge */}
+        {/* Supermarket Badge */}
         <div className="text-center pt-8">
           <span className="text-xs text-muted-foreground/50 tracking-widest uppercase">
-            Solo Mercadona por ahora
+            {localStorage.getItem('selectedSupermarket') ?? 'Mercadona'}
           </span>
         </div>
       </div>

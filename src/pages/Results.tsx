@@ -47,10 +47,14 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'pan-de-molde': ['pan de molde', 'pan molde'],
 };
 
+const getImageSrc = (imageKey: string) =>
+  imageKey.startsWith('http') ? imageKey : `/products/${imageKey}`;
+
 export default function Results() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const supermarket = localStorage.getItem('selectedSupermarket') ?? 'Mercadona';
   
   const locationState = location.state as LocationState | null;
   const [state, setState] = useState<LocationState | null>(locationState);
@@ -126,7 +130,8 @@ export default function Results() {
       const { data: products } = await supabase
         .from('products')
         .select('*')
-        .eq('active', true);
+        .eq('active', true)
+        .eq('supermarket', supermarket);
 
       if (!categories || !products) {
         throw new Error('Error loading data');
@@ -236,7 +241,7 @@ export default function Results() {
             {results.length > 0 && (
               <div className="mb-12">
                 <h2 className="font-serif text-[1.75rem] font-bold text-foreground mb-3 leading-tight">
-                  Compra esto en Mercadona
+                  Compra esto en {supermarket}
                 </h2>
                 <p className="text-base text-muted-foreground">
                   Basado en ingredientes simples y poco procesados.
@@ -258,7 +263,7 @@ export default function Results() {
                     </p>
                     <div className="bg-secondary/50 rounded-xl p-5">
                       <p className="text-[15px] text-muted-foreground leading-relaxed">
-                        No hay ningún producto aceptable en Mercadona en esta categoría. Preferimos no recomendar antes que hacerlo mal.
+                        No hay ningún producto aceptable en {supermarket} en esta categoría. Preferimos no recomendar antes que hacerlo mal.
                       </p>
                     </div>
                   </div>
@@ -274,13 +279,13 @@ export default function Results() {
                       {result.primary.image_key && (
                         <button
                           onClick={() => {
-                            setLightboxSrc(`/products/${result.primary!.image_key}`);
+                            setLightboxSrc(getImageSrc(result.primary!.image_key!));
                             setLightboxAlt(result.primary!.name_exact);
                           }}
                           className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
                         >
                           <img
-                            src={`/products/${result.primary.image_key}`}
+                            src={getImageSrc(result.primary.image_key!)}
                             alt={result.primary.name_exact}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -327,13 +332,13 @@ export default function Results() {
                             {result.alternative.image_key && (
                               <button
                                 onClick={() => {
-                                  setLightboxSrc(`/products/${result.alternative!.image_key}`);
+                                  setLightboxSrc(getImageSrc(result.alternative!.image_key!));
                                   setLightboxAlt(result.alternative!.name_exact);
                                 }}
                                 className="w-20 h-20 rounded-lg bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
                               >
                                 <img
-                                  src={`/products/${result.alternative.image_key}`}
+                                  src={getImageSrc(result.alternative.image_key!)}
                                   alt={result.alternative.name_exact}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
