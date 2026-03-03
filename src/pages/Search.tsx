@@ -250,6 +250,7 @@ export default function SearchPage() {
                             src={getImageSrc(result.primary.image_key!)}
                             alt={result.primary.name_exact}
                             className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
                             onError={e => {
                               (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                             }}
@@ -304,6 +305,7 @@ export default function SearchPage() {
                                   src={getImageSrc(result.alternative.image_key!)}
                                   alt={result.alternative.name_exact}
                                   className="w-full h-full object-cover"
+                                  referrerPolicy="no-referrer"
                                   onError={e => {
                                     (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
                                   }}
