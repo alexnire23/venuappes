@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
@@ -16,6 +16,10 @@ export default function Home() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  if (ENABLE_AUTH && !loading && !user && localStorage.getItem('cesta_demo_used')) {
+    return <Navigate to="/auth" replace />;
   }
 
   const handleLogout = async () => {

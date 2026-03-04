@@ -34,11 +34,11 @@ const App = () => (
             <Route path="/select" element={<SupermarketSelect />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/onboarding" element={<Navigate to="/home" replace />} />
-            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
-            <Route path="/write" element={<ProtectedRoute><Write /></ProtectedRoute>} />
-            <Route path="/confirm" element={<ProtectedRoute><Confirm /></ProtectedRoute>} />
-            <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/write" element={<Write />} />
+            <Route path="/confirm" element={<Confirm />} />
+            <Route path="/results" element={<Results />} />
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
             <Route path="/paywall" element={<Paywall />} />
             <Route path="/payment" element={<Payment />} />

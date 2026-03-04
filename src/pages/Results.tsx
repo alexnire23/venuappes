@@ -78,7 +78,7 @@ export default function Results() {
 
   useEffect(() => {
     if (!state?.items || hasProcessed) return;
-    if (ENABLE_AUTH && (!user || profile === null)) return;
+    if (ENABLE_AUTH && user && profile === null) return;
     processItems();
   }, [state, user, profile, hasProcessed]);
 
@@ -87,6 +87,10 @@ export default function Results() {
 
     setHasProcessed(true);
     setIsLoading(true);
+
+    if (ENABLE_AUTH && !user) {
+      localStorage.setItem('cesta_demo_used', '1');
+    }
 
     if (ENABLE_AUTH && profile) {
       try {
@@ -210,10 +214,6 @@ export default function Results() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
-  }
-
-  if (ENABLE_AUTH && !user) {
-    return <Navigate to="/auth" state={{ from: '/results' }} replace />;
   }
 
   if (!state && !sessionStorage.getItem('confirmState')) {
@@ -398,13 +398,22 @@ export default function Results() {
       {/* Footer */}
       {!isLoading && (
         <div className="px-5 py-5 border-t border-border bg-background">
-          <button
-            onClick={() => navigate('/home')}
-            className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Nueva lista →
-          </button>
+          {ENABLE_AUTH && !user ? (
+            <button
+              onClick={() => navigate('/auth')}
+              className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85"
+            >
+              Crear cuenta para seguir →
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/home')}
+              className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Nueva lista →
+            </button>
+          )}
         </div>
       )}
 
