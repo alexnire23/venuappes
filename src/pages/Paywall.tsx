@@ -1,7 +1,6 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Loader2 } from 'lucide-react';
+import { Loader2, ShieldCheck } from 'lucide-react';
 
 export default function Paywall() {
   const { user, profile, loading } = useAuth();
@@ -19,81 +18,81 @@ export default function Paywall() {
     return <Navigate to="/auth" replace />;
   }
 
-  // If already paid, redirect to home
   if (profile?.is_paid) {
     return <Navigate to="/home" replace />;
   }
 
   const benefits = [
-    'Recomendaciones directas de productos',
-    'Sin leer etiquetas ni comparar',
-    'Pago único',
+    'Búsquedas ilimitadas, siempre que quieras',
+    'Recomendaciones directas sin leer etiquetas',
+    'Mercadona y Carrefour cubiertos',
+    'Pago único, sin suscripción',
   ];
-
-  const handlePayment = () => {
-    navigate('/payment');
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
-      {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-      </header>
-
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-6 py-4">
-        {/* Hero */}
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="font-serif text-3xl font-bold text-foreground mb-2">
-            Acceso ilimitado
+      <div className="flex-1 flex flex-col px-5 pt-16 pb-8">
+
+        {/* Headline */}
+        <div className="mb-8 animate-fade-in">
+          <h1 className="font-serif text-[28px] text-foreground leading-tight mb-2">
+            Ya sabes cómo funciona.
           </h1>
-          <p className="text-muted-foreground">
-            Compra sin pensar siempre que hagas la compra.
+          <p className="text-muted-foreground text-[15px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Acceso ilimitado por menos que un café.
           </p>
         </div>
 
-        {/* Benefits */}
-        <div className="space-y-3 mb-8">
-          {benefits.map((benefit, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-3 animate-slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Check className="h-3.5 w-3.5 text-primary" />
-              </div>
-              <span className="text-foreground">{benefit}</span>
-            </div>
-          ))}
+        {/* Price card */}
+        <div className="bg-card rounded-2xl border border-border p-6 mb-6 animate-slide-up" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+          {/* Price */}
+          <div className="mb-5">
+            <span className="font-serif text-[42px] text-foreground leading-none">1,99€</span>
+            <span className="text-muted-foreground text-[14px] ml-2" style={{ fontFamily: 'Inter, sans-serif' }}>· pago único</span>
+          </div>
+
+          {/* Benefits */}
+          <ul className="space-y-3">
+            {benefits.map((benefit, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-[14px] text-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <span className="text-primary font-semibold mt-0.5 shrink-0">✓</span>
+                {benefit}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Guarantee */}
+        <div className="flex items-center gap-3 px-1 mb-8 animate-fade-in">
+          <ShieldCheck className="h-5 w-5 text-muted-foreground shrink-0" />
+          <p className="text-[13px] text-muted-foreground leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Sin suscripciones. Sin cargos ocultos. Pagas una vez y ya.
+          </p>
         </div>
 
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Price and CTA */}
-        <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
-          <div className="text-center mb-6">
-            <span className="font-serif text-4xl font-bold text-foreground">4,99 €</span>
-            <span className="text-muted-foreground ml-2">· pago único</span>
-          </div>
-
-          <Button
-            variant="hero"
-            size="xl"
-            className="w-full mb-4"
-            onClick={handlePayment}
+        {/* CTA */}
+        <div className="animate-slide-up">
+          <button
+            onClick={() => navigate('/payment')}
+            className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 mb-4 transition-opacity hover:opacity-85"
+            style={{ fontFamily: 'Inter, sans-serif' }}
           >
-            Continuar por 4,99 €
-          </Button>
+            Acceder por 1,99€ →
+          </button>
 
-          <p className="text-xs text-center text-muted-foreground">
-            Sin suscripciones · Sin pagos recurrentes
-          </p>
+          <button
+            onClick={() => navigate('/home')}
+            className="w-full text-center text-[14px] text-muted-foreground transition-opacity hover:opacity-70 py-2"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            Ahora no
+          </button>
         </div>
+
       </div>
     </div>
   );
