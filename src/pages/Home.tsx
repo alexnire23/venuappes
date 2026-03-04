@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
-import { Camera, PenLine, Search, Store, Loader2, ArrowRight, LogOut } from 'lucide-react';
+import { Camera, PenLine, Search, Store, ChevronDown, Loader2, ArrowRight, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
@@ -46,9 +46,24 @@ export default function Home() {
             <h2 className="text-[2rem] text-foreground mb-2 leading-tight">
               ¿Qué compras hoy?
             </h2>
-            <p className="text-muted-foreground text-[15px] mb-10">
+            <p className="text-muted-foreground text-[15px] mb-5">
               Te decimos exactamente qué comprar.
             </p>
+
+            {/* Supermarket chip */}
+            <div className="flex mb-8">
+              <button
+                onClick={() => navigate('/select')}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-primary bg-[#F0F5F2] transition-opacity hover:opacity-70"
+                style={{ borderColor: '#1C3A2F' }}
+              >
+                <Store className="h-4 w-4 text-primary" />
+                <span className="text-[13px] font-medium text-primary" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {supermarket}
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 text-primary" />
+              </button>
+            </div>
 
             {/* Upload Photo — primary CTA */}
             <button
@@ -86,16 +101,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Supermarket indicator */}
-        <div className="text-center pt-8">
-          <button
-            onClick={() => navigate('/select')}
-            className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground transition-opacity hover:opacity-70"
-          >
-            <Store className="h-3.5 w-3.5" />
-            {supermarket}
-          </button>
-        </div>
       </div>
     </div>
   );
