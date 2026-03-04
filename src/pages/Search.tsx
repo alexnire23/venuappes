@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { ImageLightbox } from '@/components/ImageLightbox';
+import { useAuth } from '@/contexts/AuthContext';
+import { ENABLE_AUTH } from '@/config/flags';
 
 interface Product {
   id: string;
@@ -63,6 +65,8 @@ const getImageSrc = (imageKey: string) =>
 
 export default function SearchPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isDemo = ENABLE_AUTH && !user;
   const supermarket = localStorage.getItem('selectedSupermarket') ?? 'Mercadona';
   const [query, setQuery] = useState('');
   const [searchedQuery, setSearchedQuery] = useState('');
@@ -121,9 +125,11 @@ export default function SearchPage() {
   };
 
   const handleSearch = () => {
+    if (isDemo && hasSearched) return;
     setSearchedQuery(query);
     setHasSearched(true);
     setExpandedCards(new Set());
+    if (isDemo) localStorage.setItem('cesta_demo_used', '1');
   };
 
   const results = hasSearched ? findAllMatches(searchedQuery) : [];
@@ -165,15 +171,24 @@ export default function SearchPage() {
           />
         </div>
 
-        <Button
-          onClick={handleSearch}
-          disabled={!query.trim()}
-          variant="hero"
-          size="xl"
-          className="w-full"
-        >
-          Ver recomendación
-        </Button>
+        {isDemo && hasSearched ? (
+          <button
+            onClick={() => navigate('/auth')}
+            className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85"
+          >
+            Crear cuenta para seguir →
+          </button>
+        ) : (
+          <Button
+            onClick={handleSearch}
+            disabled={!query.trim()}
+            variant="hero"
+            size="xl"
+            className="w-full"
+          >
+            Ver recomendación
+          </Button>
+        )}
       </div>
 
       {/* Content */}
@@ -185,10 +200,12 @@ export default function SearchPage() {
               <button
                 key={chip.query}
                 onClick={() => {
+                  if (isDemo && hasSearched) return;
                   setQuery(chip.query);
                   setSearchedQuery(chip.query);
                   setHasSearched(true);
                   setExpandedCards(new Set());
+                  if (isDemo) localStorage.setItem('cesta_demo_used', '1');
                 }}
                 className="px-4 py-2.5 rounded-full text-[15px] text-muted-foreground bg-card border border-border/30 hover:border-primary/20 hover:text-foreground transition-all"
               >
