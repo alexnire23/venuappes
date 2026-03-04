@@ -39,7 +39,7 @@ const App = () => (
             <Route path="/write" element={<Write />} />
             <Route path="/confirm" element={<Confirm />} />
             <Route path="/results" element={<Results />} />
-            <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/paywall" element={<Paywall />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
