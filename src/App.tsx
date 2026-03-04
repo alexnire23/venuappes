@@ -41,8 +41,8 @@ const App = () => (
             <Route path="/results" element={<Results />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/paywall" element={<Paywall />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+            <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
