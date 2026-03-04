@@ -90,9 +90,15 @@ export default function Results() {
 
     if (ENABLE_AUTH && profile) {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
         const { data: accessData, error: accessError } = await supabase.functions.invoke(
           'decrement-free-use',
-          { method: 'POST' }
+          {
+            method: 'POST',
+            headers: session?.access_token
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : undefined,
+          }
         );
 
         if (accessError) {
