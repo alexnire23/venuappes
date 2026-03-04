@@ -65,14 +65,6 @@ export default function Confirm() {
     };
     sessionStorage.setItem('confirmState', JSON.stringify(confirmState));
 
-    if (ENABLE_AUTH && !user) {
-      navigate('/auth', {
-        state: { from: '/results' },
-        replace: false,
-      });
-      return;
-    }
-
     setIsGenerating(true);
     navigate('/results', { state: confirmState });
   };
