@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
-import { Button } from '@/components/ui/button';
 import { RotateCcw, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -55,7 +54,7 @@ export default function Results() {
   const navigate = useNavigate();
   const location = useLocation();
   const supermarket = localStorage.getItem('selectedSupermarket') ?? 'Mercadona';
-  
+
   const locationState = location.state as LocationState | null;
   const [state, setState] = useState<LocationState | null>(locationState);
 
@@ -67,7 +66,6 @@ export default function Results() {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [lightboxAlt, setLightboxAlt] = useState('');
 
-  // Recover state from sessionStorage if coming from auth
   useEffect(() => {
     if (!locationState) {
       const savedState = sessionStorage.getItem('confirmState');
@@ -80,7 +78,6 @@ export default function Results() {
 
   useEffect(() => {
     if (!state?.items || hasProcessed) return;
-    // When auth is disabled, process immediately; when enabled, wait for user+profile
     if (ENABLE_AUTH && (!user || profile === null)) return;
     processItems();
   }, [state, user, profile, hasProcessed]);
@@ -91,7 +88,6 @@ export default function Results() {
     setHasProcessed(true);
     setIsLoading(true);
 
-    // Access check only when auth is enabled
     if (ENABLE_AUTH && profile) {
       try {
         const { data: accessData, error: accessError } = await supabase.functions.invoke(
@@ -150,7 +146,7 @@ export default function Results() {
             if (!matchedCategories.has(slug)) {
               matchedCategories.add(slug);
               const category = categories.find(c => c.slug === slug);
-              const categoryProducts = products.filter(p => 
+              const categoryProducts = products.filter(p =>
                 category && p.category_id === category.id
               );
 
@@ -175,7 +171,6 @@ export default function Results() {
       setResults(matched);
       setUnmatchedItems(unmatched);
 
-      // Record scan only when auth is enabled and user exists
       if (ENABLE_AUTH && user) {
         await supabase.from('scans').insert({
           user_id: user.id,
@@ -211,12 +206,10 @@ export default function Results() {
     );
   }
 
-  // Redirect to auth if not logged in (only when auth is enabled)
   if (ENABLE_AUTH && !user) {
     return <Navigate to="/auth" state={{ from: '/results' }} replace />;
   }
 
-  // If no state and no saved state, go to home
   if (!state && !sessionStorage.getItem('confirmState')) {
     return <Navigate to="/home" replace />;
   }
@@ -224,181 +217,173 @@ export default function Results() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-8 py-5 text-center border-b border-border/30">
-        <h1 className="font-serif text-lg font-semibold text-foreground">Recomendaciones</h1>
+      <header className="px-5 py-5 text-center border-b border-border">
+        <h1 className="text-lg text-foreground">Tu compra</h1>
+        {!isLoading && results.length > 0 && (
+          <div className="mt-1.5 flex items-center justify-center gap-1.5">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold tracking-[0.1em] uppercase text-primary" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <span className="text-[8px]">●</span>
+              {supermarket}
+            </span>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-8">
+      <div className="flex-1 overflow-y-auto px-5 py-6">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-28 animate-fade-in">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-5" />
-            <p className="text-muted-foreground text-base">Analizando tu lista...</p>
+            <Loader2 className="h-7 w-7 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground text-[15px]">Analizando tu lista...</p>
           </div>
         ) : (
-          <div className="space-y-10 animate-fade-in">
-            {/* Global Header */}
-            {results.length > 0 && (
-              <div className="mb-12">
-                <h2 className="font-serif text-[1.75rem] font-bold text-foreground mb-3 leading-tight">
-                  Compra esto en {supermarket}
-                </h2>
-                <p className="text-base text-muted-foreground">
-                  Basado en ingredientes simples y poco procesados.
-                </p>
-              </div>
-            )}
-
+          <div className="animate-fade-in">
             {/* Results */}
-            {results.map((result, index) => (
-              <div
-                key={result.categorySlug}
-                className="bg-card rounded-2xl border border-border/30 overflow-hidden animate-slide-up"
-                style={{ animationDelay: `${index * 0.08}s`, boxShadow: 'var(--shadow-md)' }}
-              >
-                {!result.primary && (
-                  <div className="p-7">
-                    <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-4">
-                      {result.categoryName}
-                    </p>
-                    <div className="bg-secondary/50 rounded-xl p-5">
-                      <p className="text-[15px] text-muted-foreground leading-relaxed">
-                        No hay ningún producto aceptable en {supermarket} en esta categoría. Preferimos no recomendar antes que hacerlo mal.
+            <div className="space-y-3">
+              {results.map((result, index) => (
+                <div
+                  key={result.categorySlug}
+                  className="bg-card rounded-2xl border border-border overflow-hidden animate-slide-up"
+                  style={{ animationDelay: `${index * 0.06}s`, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
+                >
+                  {!result.primary && (
+                    <div className="p-5">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.1em] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {result.categoryName}
+                      </p>
+                      <p className="text-[14px] text-muted-foreground leading-relaxed">
+                        No hay ningún producto aceptable en {supermarket} en esta categoría.
                       </p>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {result.primary && (
-                  <div className="p-7">
-                    <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-[0.15em] mb-6">
-                      {result.categoryName}
-                    </p>
+                  {result.primary && (
+                    <div className="p-5">
+                      {/* Category label */}
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.1em] mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {result.categoryName}
+                      </p>
 
-                    <div className="flex gap-5 mb-6">
-                      {result.primary.image_key && (
-                        <button
-                          onClick={() => {
-                            setLightboxSrc(getImageSrc(result.primary!.image_key!));
-                            setLightboxAlt(result.primary!.name_exact);
-                          }}
-                          className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
-                        >
-                          <img
-                            src={getImageSrc(result.primary.image_key!)}
-                            alt={result.primary.name_exact}
-                            className="w-full h-full object-cover"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                      {/* Primary product */}
+                      <div className="flex gap-4 mb-5">
+                        {result.primary.image_key && (
+                          <button
+                            onClick={() => {
+                              setLightboxSrc(getImageSrc(result.primary!.image_key!));
+                              setLightboxAlt(result.primary!.name_exact);
                             }}
-                          />
-                        </button>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-serif text-xl font-bold text-foreground mb-2 leading-snug">
-                          {result.primary.name_exact}
-                        </h3>
-                        <span className="inline-block text-[10px] font-bold text-primary border border-primary/30 px-2.5 py-0.5 rounded uppercase tracking-[0.12em]">
-                          Recomendado
-                        </span>
-                      </div>
-                    </div>
-
-                    <ul className="space-y-3.5 pl-1">
-                      {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
-                        <li key={i} className="text-[15px] text-muted-foreground flex items-start gap-3 leading-relaxed">
-                          <span className="text-muted-foreground/30 mt-0.5">—</span>
-                          {reason}
-                        </li>
-                      ))}
-                    </ul>
-
-                    {result.alternative && (
-                      <div className="mt-7 pt-6 border-t border-border/30">
-                        <button
-                          onClick={() => toggleCard(result.categorySlug)}
-                          className="w-full flex items-center justify-between text-[15px] text-muted-foreground/60 hover:text-foreground transition-colors"
-                        >
-                          <span>Ver alternativa (opcional)</span>
-                          {expandedCards.has(result.categorySlug) ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                        </button>
-
-                        {expandedCards.has(result.categorySlug) && (
-                          <div className="mt-5 flex gap-4 animate-fade-in">
-                            {result.alternative.image_key && (
-                              <button
-                                onClick={() => {
-                                  setLightboxSrc(getImageSrc(result.alternative!.image_key!));
-                                  setLightboxAlt(result.alternative!.name_exact);
-                                }}
-                                className="w-20 h-20 rounded-lg bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
-                              >
-                                <img
-                                  src={getImageSrc(result.alternative.image_key!)}
-                                  alt={result.alternative.name_exact}
-                                  className="w-full h-full object-cover"
-                                  referrerPolicy="no-referrer"
-                                  onError={(e) => {
-                                    (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-                                  }}
-                                />
-                              </button>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-foreground text-base mb-2">
-                                {result.alternative.name_exact}
-                              </p>
-                              <ul className="space-y-1.5">
-                                {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
-                                  <li key={i} className="text-sm text-muted-foreground leading-relaxed">
-                                    — {reason}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
+                            className="w-20 h-20 rounded-xl bg-background overflow-hidden shrink-0 cursor-zoom-in border border-border/50"
+                          >
+                            <img
+                              src={getImageSrc(result.primary.image_key!)}
+                              alt={result.primary.name_exact}
+                              className="w-full h-full object-contain p-1.5"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => {
+                                (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                              }}
+                            />
+                          </button>
                         )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-[16px] font-semibold text-foreground mb-1.5 leading-snug" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {result.primary.name_exact}
+                          </h3>
+                          <span className="inline-block text-[10px] font-semibold text-white bg-primary px-2.5 py-0.5 rounded-full uppercase tracking-[0.08em]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            Recomendado
+                          </span>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+
+                      {/* Reasons */}
+                      <ul className="space-y-2">
+                        {result.primary.why_recommended.slice(0, 3).map((reason, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-[13px] text-foreground leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <span className="text-accent font-semibold mt-0.5 shrink-0">✓</span>
+                            {reason}
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Alternative */}
+                      {result.alternative && (
+                        <div className="mt-5 pt-4 border-t border-border">
+                          <button
+                            onClick={() => toggleCard(result.categorySlug)}
+                            className="w-full flex items-center justify-between text-[13px] text-accent font-medium transition-opacity hover:opacity-70"
+                            style={{ fontFamily: 'Inter, sans-serif' }}
+                          >
+                            <span>Ver alternativa (opcional)</span>
+                            {expandedCards.has(result.categorySlug) ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
+                          </button>
+
+                          {expandedCards.has(result.categorySlug) && (
+                            <div className="mt-4 flex gap-3 animate-fade-in">
+                              {result.alternative.image_key && (
+                                <button
+                                  onClick={() => {
+                                    setLightboxSrc(getImageSrc(result.alternative!.image_key!));
+                                    setLightboxAlt(result.alternative!.name_exact);
+                                  }}
+                                  className="w-16 h-16 rounded-xl bg-background overflow-hidden shrink-0 cursor-zoom-in border border-border/50"
+                                >
+                                  <img
+                                    src={getImageSrc(result.alternative.image_key!)}
+                                    alt={result.alternative.name_exact}
+                                    className="w-full h-full object-contain p-1"
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                      (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+                                    }}
+                                  />
+                                </button>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[14px] font-semibold text-foreground mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                  {result.alternative.name_exact}
+                                </p>
+                                <ul className="space-y-1.5">
+                                  {result.alternative.why_recommended.slice(0, 2).map((reason, i) => (
+                                    <li key={i} className="flex items-start gap-2 text-[13px] text-foreground leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                      <span className="text-accent font-semibold mt-0.5 shrink-0">✓</span>
+                                      {reason}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 
             {/* Unmatched Items */}
             {unmatchedItems.length > 0 && (
-              <div className="bg-secondary/30 rounded-2xl p-7 border border-border/30">
-                <p className="font-medium text-foreground text-base mb-1">
+              <div className="mt-3 bg-card rounded-2xl p-5 border border-border">
+                <p className="text-[14px] font-semibold text-foreground mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
                   Aún no lo cubrimos
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-[13px] text-muted-foreground">
                   {unmatchedItems.join(', ')}
                 </p>
               </div>
             )}
 
-            {/* Empty State */}
-            {results.length === 0 && unmatchedItems.length > 0 && (
-              <div className="text-center py-16">
-                <h3 className="font-serif text-xl font-bold text-foreground mb-2">
-                  Sin coincidencias
-                </h3>
-                <p className="text-base text-muted-foreground mb-6">
-                  No encontramos productos en nuestras categorías actuales
+            {/* Closing block */}
+            {results.length > 0 && (
+              <div className="mt-6 bg-[#F0F5F2] rounded-2xl p-6 text-center">
+                <p className="text-[18px] text-foreground leading-snug">
+                  Estos productos están seleccionados por ingredientes, no por precio ni marketing.
                 </p>
               </div>
-            )}
-
-            {/* Closing phrase */}
-            {results.length > 0 && (
-              <p className="text-center text-xs text-muted-foreground/40 py-4 tracking-wide">
-                Compra estos productos y no pienses más.
-              </p>
             )}
           </div>
         )}
@@ -406,16 +391,14 @@ export default function Results() {
 
       {/* Footer */}
       {!isLoading && (
-        <div className="px-8 py-5 border-t border-border/30 bg-background">
-          <Button
-            variant="hero"
-            size="lg"
-            className="w-full"
+        <div className="px-5 py-5 border-t border-border bg-background">
+          <button
             onClick={() => navigate('/home')}
+            className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85"
           >
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Nueva lista de la compra
-          </Button>
+            <RotateCcw className="h-4 w-4" />
+            Nueva lista →
+          </button>
         </div>
       )}
 

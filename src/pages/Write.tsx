@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -40,48 +39,55 @@ export default function Write() {
     });
   };
 
+  const hasText = text.trim().length > 0;
+
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-8 py-5 flex items-center gap-3 border-b border-border/30">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/home')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="font-serif text-base font-semibold text-foreground">Escribir lista</h1>
+      <header className="px-5 py-5 flex items-center gap-3 border-b border-border">
+        <button
+          onClick={() => navigate('/home')}
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-foreground" />
+        </button>
+        <h1 className="text-[17px] font-medium text-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>Tu lista</h1>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-8 py-8">
+      <div className="flex-1 flex flex-col px-5 py-6">
         <div className="flex-1 flex flex-col animate-fade-in">
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-            Escribe o pega tu lista. Un producto por línea.
+          <p className="text-[13px] text-muted-foreground mb-4">
+            Un producto por línea, o separados por comas.
           </p>
 
-          <div className="flex-1 mb-8">
+          <div className="flex-1 mb-6">
             <Textarea
-              placeholder="Ejemplo:&#10;patatas fritas&#10;yogur natural&#10;tomate frito&#10;galletas&#10;huevos"
+              placeholder="patatas fritas, yogur, galletas..."
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="h-full min-h-[220px] resize-none rounded-2xl text-base bg-card border-border/30 p-5 placeholder:text-muted-foreground/40"
+              className="h-full min-h-[220px] resize-none rounded-xl text-[15px] bg-card border-border p-4 placeholder:text-muted-foreground/50 focus:ring-1 focus:ring-primary"
             />
           </div>
 
-          <Button
-            variant="hero"
-            size="xl"
-            className="w-full"
+          <button
             onClick={handleSubmit}
-            disabled={isProcessing || !text.trim()}
+            disabled={isProcessing || !hasText}
+            className={`w-full h-14 rounded-full text-[15px] font-medium flex items-center justify-center gap-2 transition-opacity ${
+              hasText
+                ? 'bg-primary text-white hover:opacity-85'
+                : 'bg-border text-muted-foreground cursor-not-allowed'
+            }`}
           >
             {isProcessing ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Procesando...
               </>
             ) : (
               'Continuar'
             )}
-          </Button>
+          </button>
         </div>
       </div>
     </div>

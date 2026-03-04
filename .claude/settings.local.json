@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(supabase --version)",
+      "Bash(winget --version)",
+      "Bash(scoop --version)",
+      "Bash(choco --version)"
+    ]
+  }
+}

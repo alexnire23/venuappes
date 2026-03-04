@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-opacity duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -19,8 +19,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground rounded-2xl hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground rounded-xl",
         link: "text-primary underline-offset-4 hover:underline",
-        // Editorial hero button — deep green, large radius, subtle shadow
-        hero: "bg-primary text-primary-foreground rounded-2xl shadow-lg hover:shadow-xl text-base font-semibold tracking-tight",
+        // Cesta hero button — deep green, pill shape, opacity hover
+        hero: "bg-primary text-primary-foreground rounded-full text-base font-medium transition-opacity hover:opacity-85",
         accent: "bg-accent text-accent-foreground rounded-2xl hover:bg-accent/90",
         soft: "bg-primary/8 text-primary rounded-2xl hover:bg-primary/15",
       },

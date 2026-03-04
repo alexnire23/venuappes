@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
 import { ArrowLeft, Plus, X, Loader2 } from 'lucide-react';
@@ -15,7 +14,7 @@ interface LocationState {
 }
 
 export default function Confirm() {
-  const { user, profile, loading } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | null;
@@ -67,9 +66,9 @@ export default function Confirm() {
     sessionStorage.setItem('confirmState', JSON.stringify(confirmState));
 
     if (ENABLE_AUTH && !user) {
-      navigate('/auth', { 
+      navigate('/auth', {
         state: { from: '/results' },
-        replace: false 
+        replace: false,
       });
       return;
     }
@@ -81,78 +80,81 @@ export default function Confirm() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-8 py-5 flex flex-col gap-3 border-b border-border/30">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-serif text-base font-semibold text-foreground flex-1">Confirmar lista</h1>
+      <header className="px-5 py-5 border-b border-border">
+        <div className="flex items-center gap-3 mb-1">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          <h1 className="text-[17px] font-medium text-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>Esto he entendido</h1>
         </div>
         {ENABLE_AUTH && <FreeUsesIndicator />}
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-8 py-8">
+      <div className="flex-1 flex flex-col px-5 py-6">
         <div className="flex-1 animate-fade-in">
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-            Hemos detectado estos productos. Ajusta solo si falta algo.
+          <p className="text-[13px] text-muted-foreground mb-5">
+            Quita lo que no sea o añade algo más.
           </p>
 
-          {/* Items as Chips */}
-          <div className="flex flex-wrap gap-2.5 mb-8">
+          {/* Chips */}
+          <div className="flex flex-wrap gap-2 mb-6">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 bg-card rounded-full pl-4 pr-2 py-2 border border-border/30"
+                className="flex items-center gap-1.5 bg-[#F0F5F2] border border-primary/20 rounded-full pl-3.5 pr-2 py-1.5"
               >
-                <span className="text-foreground text-sm">{item}</span>
+                <span className="text-foreground text-[14px]">{item}</span>
                 <button
-                  className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-border transition-colors"
                   onClick={() => handleRemoveItem(index)}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3 text-muted-foreground" />
                 </button>
               </div>
             ))}
           </div>
 
           {/* Add Item */}
-          <div className="flex gap-2.5 mb-10">
+          <div className="flex gap-2 mb-8">
             <Input
               placeholder="Añadir producto..."
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-              className="flex-1 h-12 rounded-2xl bg-card border-border/30 px-5"
+              className="flex-1 h-11 rounded-xl bg-card border-border px-4 text-[15px]"
             />
-            <Button
-              variant="secondary"
-              size="icon"
-              className="h-12 w-12 shrink-0 rounded-2xl"
+            <button
               onClick={handleAddItem}
+              className="w-11 h-11 shrink-0 rounded-xl bg-secondary flex items-center justify-center hover:opacity-70 transition-opacity"
             >
-              <Plus className="h-5 w-5" />
-            </Button>
+              <Plus className="h-5 w-5 text-foreground" />
+            </button>
           </div>
         </div>
 
         {/* Generate Button */}
-        <Button
-          variant="hero"
-          size="xl"
-          className="w-full"
+        <button
           onClick={handleGenerate}
           disabled={isGenerating || items.length === 0}
+          className={`w-full h-14 rounded-full text-[15px] font-medium flex items-center justify-center gap-2 transition-opacity ${
+            items.length > 0
+              ? 'bg-primary text-white hover:opacity-85'
+              : 'bg-border text-muted-foreground cursor-not-allowed'
+          }`}
         >
           {isGenerating ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
               Generando...
             </>
           ) : (
-            'Ver qué comprar'
+            'Ver qué comprar →'
           )}
-        </Button>
+        </button>
       </div>
     </div>
   );

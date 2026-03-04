@@ -14,7 +14,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-prod920382_01.jpg',
+  'https://static.carrefour.es/hd_1500x_/img_pim_food/042931_00_1.jpg',
   'Patata* (61%), aceite de oliva virgen extra* (39%), sal. *ecológico. Origen España.',
   ARRAY[
     'Solo 3 ingredientes: patata eco, AOVE (39%), sal',
@@ -33,7 +33,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-530305149_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/459506_00_1.jpg',
   'Patatas, aceite de oliva virgen extra (30%), sal.',
   ARRAY[
     '3 ingredientes: patatas, AOVE (30%), sal',
@@ -55,7 +55,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-VC4AECOMM-549359_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/549359_00_1.jpg',
   'Leche entera pasteurizada, fermentos lácticos.',
   ARRAY[
     'Solo 2 ingredientes: leche entera pasteurizada + fermentos',
@@ -74,7 +74,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-521029387_01.jpg',
+  'https://static.carrefour.es/hd_1500x_/img_pim_food/002901_00_1.jpg',
   'Leche fresca pasteurizada (99,1%), leche en polvo desnatada, fermentos lácticos.',
   ARRAY[
     'Leche fresca pasteurizada (99,1%), sin aditivos',
@@ -96,7 +96,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-526538957_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/512107_00_1.jpg',
   'Tomate* 85%, AOVE* (3,9%), cebolla*, puerro*, azúcar de caña*, sal, ajo*, ácido cítrico. *ecológico.',
   ARRAY[
     'Con azúcar de caña (no azúcar refinado), sin almidón ni aromas',
@@ -115,7 +115,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-826900524_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/961078_00_1.jpg',
   'Tomate* (138g/100g), AOVE* (5,1%), azúcar de caña*, sal. *ecológico.',
   ARRAY[
     'Solo 4 ingredientes: tomate, AOVE (5,1%), azúcar de caña, sal',
@@ -137,7 +137,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-858200344_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/108353_00_1.jpg',
   'Harina trigo* 70%, azúcar moreno de caña*, mantequilla* 14%, leche desnatada en polvo*, gasificantes, sal, aromas naturales. *ecológico.',
   ARRAY[
     'Sin aceite de palma ni girasol: la grasa es mantequilla real',
@@ -159,7 +159,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-prod970492_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/151112_00_1.jpg',
   'Huevo fresco de gallina campera. Categoría A. Código 1. Origen España.',
   ARRAY[
     'Código 1 (campero): gallinas con acceso al exterior',
@@ -178,7 +178,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-VC4AECOMM-500117_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/497273_00_1.jpg',
   'Huevo fresco de gallina ecológica. Categoría A. Código 0. Origen España.',
   ARRAY[
     'Código 0 (ecológico): máximo estándar de bienestar animal',
@@ -200,7 +200,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-641402048_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/813631_00_1.jpg',
   '100% copos de avena integral.',
   ARRAY[
     '1 único ingrediente: 100% copos de avena integral',
@@ -209,24 +209,6 @@ VALUES (
   ]
 );
 
--- Alternative
-INSERT INTO public.products (name_exact, brand, supermarket, category_id, role, rank, active, image_key, ingredients, why_recommended)
-VALUES (
-  'Copos de Avena 100% Integral Quaker 500g',
-  'Quaker',
-  'Carrefour',
-  (SELECT id FROM public.categories WHERE slug = 'avena'),
-  'alternative',
-  2,
-  true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-521005456_01.jpg',
-  '100% copos de avena integral.',
-  ARRAY[
-    'Mismos ingredientes que la marca blanca',
-    'Envase más reconocible en el lineal',
-    'Ligero sobrecoste sin ninguna diferencia real'
-  ]
-);
 
 
 -- 07. CEREALES ----------------------------------------------------------------
@@ -245,7 +227,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-590205743_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/183830_00_1.jpg',
   'Semillas de mostaza*, vinagre de manzana*, agua, sal marina, cúrcuma*. *ecológico.',
   ARRAY[
     'Sin azúcar añadido, sin conservadores artificiales',
@@ -267,7 +249,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-521004609_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/524157_00_1.jpg',
   'Agua, semillas de mostaza, vinagre de alcohol, sal, ácido cítrico, metabisulfito potásico.',
   ARRAY[
     'Mismos ingredientes que Maille, precio más bajo',
@@ -286,7 +268,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-521029219_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/002263_00_1.jpg',
   'Agua, semillas de mostaza, vinagre de alcohol, sal, ácido cítrico, metabisulfito potásico.',
   ARRAY[
     'Ingredientes idénticos a la marca blanca',
@@ -308,7 +290,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-800416264_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/924292_00_1.jpg',
   'Tomate (78%), aceite de oliva (15%), azúcar, sal, ajo, ácido cítrico.',
   ARRAY[
     'Aceite de oliva (15%): única en la categoría sin aceite de girasol',
@@ -330,7 +312,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-prod1000109_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/075593_00_1.jpg',
   'Nata pasteurizada (39%), leche evaporada desnatada, azúcar, yema de huevo, extracto de vainilla.',
   ARRAY[
     'Solo 5 ingredientes: nata, leche, azúcar, yema de huevo, vainilla',
@@ -349,7 +331,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-prod1000106_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/075584_00_1.jpg',
   'Nata pasteurizada (36%), leche evaporada desnatada, fresas (21%), azúcar, yema de huevo.',
   ARRAY[
     '5 ingredientes: nata, leche, fresas (21%), azúcar, yema de huevo',
@@ -371,7 +353,7 @@ VALUES (
   'primary',
   1,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-fprod1330001_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/199797_00_1.jpg',
   'Harina de trigo (67%), agua (26%), levadura (3,5%), aceite de oliva (1,7%), sal, masa madre inactiva de trigo y centeno integral, harina fermentada de maíz. Sin aditivos.',
   ARRAY[
     'Sin conservadores, sin emulgentes: único pan de molde en Carrefour que cumple',
@@ -390,7 +372,7 @@ VALUES (
   'alternative',
   2,
   true,
-  'https://static.carrefour.es/hd_510x_/img_pim_food/R-fprod1330003_01.jpg',
+  'https://static.carrefour.es/hd_510x_/img_pim_food/696774_00_1.jpg',
   'Harina de trigo (68%), agua (24%), levadura (3,6%), aceite de oliva (1,3%), sal, masa madre inactiva de centeno y trigo, harina fermentada de maíz. Sin aditivos.',
   ARRAY[
     'Misma fórmula limpia, formato sin corteza',

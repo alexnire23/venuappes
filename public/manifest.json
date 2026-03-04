@@ -1,11 +1,11 @@
 {
-  "name": "Compra Real",
-  "short_name": "Compra Real",
-  "description": "Compra sin pensar. Recomendaciones de productos saludables para Mercadona.",
+  "name": "Cesta",
+  "short_name": "Cesta",
+  "description": "Compra sin pensar. Recomendaciones de productos para Mercadona y Carrefour.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f9f6",
-  "theme_color": "#2d8a5b",
+  "background_color": "#F7F4EF",
+  "theme_color": "#1C3A2F",
   "orientation": "portrait",
   "icons": [
     {

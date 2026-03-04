@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 
 const supermarkets = [
@@ -22,19 +21,19 @@ export default function SupermarketSelect() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
-      <div className="flex-1 flex flex-col items-center px-8 pt-20 pb-10">
+      <div className="flex-1 flex flex-col items-center px-5 pt-16 pb-10">
         {/* Header */}
-        <div className="text-center mb-14 animate-slide-up">
-          <h1 className="font-serif text-[2.25rem] font-bold text-foreground mb-4 leading-[1.1] tracking-tight">
+        <div className="text-center mb-12 animate-slide-up w-full max-w-xs">
+          <h1 className="text-[2rem] text-foreground mb-2 leading-tight">
             ¿Dónde haces la compra?
           </h1>
           <p className="text-sm text-muted-foreground">
-            Disponible en Mercadona y Carrefour.
+            Compra sin pensar.
           </p>
         </div>
 
-        {/* Supermarket list */}
-        <div className="w-full max-w-xs space-y-3 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+        {/* Supermarket cards */}
+        <div className="w-full max-w-xs space-y-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           {supermarkets.map((s) => {
             const isSelected = s.available && selected === s.name;
             return (
@@ -42,25 +41,21 @@ export default function SupermarketSelect() {
                 key={s.name}
                 disabled={!s.available}
                 onClick={() => s.available && setSelected(s.name)}
-                className={`w-full rounded-2xl border px-5 py-4 flex items-center justify-between transition-all ${
+                className={`w-full rounded-2xl flex items-center justify-between px-5 py-4 transition-all duration-150 ${
                   !s.available
-                    ? 'border-border bg-card opacity-45 cursor-default'
+                    ? 'border border-border bg-card opacity-50 cursor-default'
                     : isSelected
-                    ? 'border-primary bg-primary/[0.06]'
-                    : 'border-border/50 bg-card hover:border-primary/30 hover:bg-primary/[0.02]'
+                    ? 'border-2 border-primary bg-[#F0F5F2]'
+                    : 'border border-border bg-card hover:border-primary/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      isSelected
-                        ? 'bg-primary text-primary-foreground'
-                        : s.available
-                        ? 'bg-muted text-muted-foreground/40 border border-border'
-                        : 'bg-muted text-muted-foreground/50'
+                    className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                      isSelected ? 'bg-primary' : 'border border-border bg-background'
                     }`}
                   >
-                    {isSelected && <Check className="h-4 w-4" />}
+                    {isSelected && <Check className="h-3.5 w-3.5 text-white" />}
                   </div>
                   <span className={`text-[15px] font-medium ${s.available ? 'text-foreground' : 'text-muted-foreground'}`}>
                     {s.name}
@@ -68,7 +63,7 @@ export default function SupermarketSelect() {
                 </div>
 
                 {!s.available && (
-                  <span className="text-xs text-muted-foreground/60 tracking-wide">
+                  <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
                     Próximamente
                   </span>
                 )}
@@ -80,15 +75,13 @@ export default function SupermarketSelect() {
         <div className="flex-1" />
 
         {/* CTA */}
-        <div className="w-full max-w-xs animate-slide-up" style={{ animationDelay: '0.25s' }}>
-          <Button
-            variant="hero"
-            size="xl"
-            className="w-full h-16 text-lg"
+        <div className="w-full max-w-xs animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <button
             onClick={handleContinue}
+            className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full transition-opacity hover:opacity-85"
           >
             Continuar con {selected}
-          </Button>
+          </button>
         </div>
       </div>
     </div>
