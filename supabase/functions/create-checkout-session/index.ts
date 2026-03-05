@@ -2,10 +2,8 @@
 // 1. En Stripe Dashboard → Products: crear producto "Cesta — Acceso ilimitado" a 1,99€
 // 2. En Supabase → Settings → Edge Functions → Secrets:
 //    - STRIPE_SECRET_KEY (de Stripe Dashboard → Developers → API Keys)
-//    - FRONTEND_URL (ej: https://tucesta.app)
 
 import Stripe from "https://esm.sh/stripe@13.3.0?target=deno";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,27 +16,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verificar usuario autenticado
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
+    const { user_id } = await req.json();
+
+    if (!user_id) {
       return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-    const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Invalid user" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Missing user_id" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -46,8 +29,6 @@ Deno.serve(async (req) => {
       apiVersion: "2023-10-16",
       httpClient: Stripe.createFetchHttpClient(),
     });
-
-    const frontendUrl = Deno.env.get("FRONTEND_URL") ?? "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -63,10 +44,10 @@ Deno.serve(async (req) => {
           quantity: 1,
         },
       ],
-      success_url: `${frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${frontendUrl}/paywall`,
+      success_url: "https://venuappes.vercel.app/payment-success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://venuappes.vercel.app/paywall",
       metadata: {
-        user_id: user.id,
+        user_id,
       },
     });
 
