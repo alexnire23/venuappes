@@ -71,6 +71,8 @@ export default function Auth() {
           return;
         }
         toast.success('¡Cuenta creada!');
+        navigate('/home', { replace: true });
+        return;
       } else {
         toast.error('Error al iniciar sesión. Inténtalo de nuevo.');
         setIsSubmitting(false);
@@ -78,7 +80,7 @@ export default function Auth() {
       }
     }
 
-    setIsSubmitting(false);
+    navigate('/home', { replace: true });
   };
 
   const handleGoogleLogin = async () => {
