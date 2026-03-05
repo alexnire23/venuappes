@@ -98,41 +98,35 @@ export default function Results() {
     }
 
     if (ENABLE_AUTH && user) {
-      const { data: { session }, error: sessionError } =
-        await supabase.auth.getSession();
+      // Verificar acceso y decrementar directamente
+      // Requiere política RLS en Supabase: UPDATE profiles WHERE auth.uid() = id
+      const { data: currentProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('free_uses_remaining, is_paid')
+        .eq('id', user.id)
+        .single();
 
-      // Si no hay sesión válida, refrescarla
-      let validSession = session;
-      if (!session?.access_token || sessionError) {
-        const { data: refreshData } = await supabase.auth.refreshSession();
-        validSession = refreshData?.session ?? null;
-      }
-
-      if (!validSession?.access_token) {
-        navigate('/auth', { replace: true });
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke(
-        'decrement-free-use',
-        {
-          headers: {
-            Authorization: `Bearer ${validSession.access_token}`
-          }
-        }
-      );
-
-      if (error) {
-        console.error('Error decrement-free-use:', error);
+      if (profileError || !currentProfile) {
         toast.error('Error al verificar acceso');
         navigate('/home', { replace: true });
         setIsLoading(false);
         return;
       }
 
-      if (data?.access_granted === false) {
+      if (!currentProfile.is_paid && currentProfile.free_uses_remaining <= 0) {
         navigate('/paywall', { replace: true });
         return;
+      }
+
+      if (!currentProfile.is_paid) {
+        const { error: decrementError } = await supabase
+          .from('profiles')
+          .update({ free_uses_remaining: currentProfile.free_uses_remaining - 1 })
+          .eq('id', user.id);
+
+        if (decrementError) {
+          console.error('Error decrementing:', decrementError);
+        }
       }
 
       await refreshProfile();
