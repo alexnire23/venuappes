@@ -2,11 +2,11 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
 import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
-import { Camera, PenLine, Search, Store, ChevronDown, Loader2, ArrowRight, LogOut } from 'lucide-react';
+import { Camera, PenLine, Search, Store, ChevronDown, Loader2, ArrowRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const supermarket = localStorage.getItem('selectedSupermarket') ?? 'Mercadona';
 
@@ -22,21 +22,14 @@ export default function Home() {
     return <Navigate to="/auth" replace />;
   }
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/onboarding');
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
       <header className="px-5 py-5 flex items-center justify-between">
         <span className="font-serif text-xl text-foreground">Cesta</span>
-        {ENABLE_AUTH && user && (
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="h-5 w-5" />
-          </Button>
-        )}
+        <Button variant="ghost" size="icon" onClick={() => navigate(user ? '/profile' : '/auth')}>
+          <User className="h-5 w-5" />
+        </Button>
       </header>
 
       {ENABLE_AUTH && user && (
