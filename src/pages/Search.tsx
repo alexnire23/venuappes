@@ -65,7 +65,7 @@ const getImageSrc = (imageKey: string) =>
 
 export default function SearchPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const isDemo = ENABLE_AUTH && !user;
   const supermarket = localStorage.getItem('selectedSupermarket') ?? 'Mercadona';
   const [query, setQuery] = useState('');
@@ -124,12 +124,48 @@ export default function SearchPage() {
     return results.sort((a, b) => b.score - a.score);
   };
 
-  const handleSearch = () => {
-    if (isDemo && hasSearched) return;
-    setSearchedQuery(query);
+  const doSearch = async (q: string) => {
+    if (ENABLE_AUTH && !user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (ENABLE_AUTH && user) {
+      const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('free_uses_remaining, is_paid')
+        .eq('id', user.id)
+        .single();
+
+      if (currentProfile) {
+        if (!currentProfile.is_paid && currentProfile.free_uses_remaining <= 0) {
+          navigate('/paywall', { replace: true });
+          return;
+        }
+
+        if (!currentProfile.is_paid) {
+          const { error: decrementError } = await supabase
+            .from('profiles')
+            .update({ free_uses_remaining: currentProfile.free_uses_remaining - 1 })
+            .eq('id', user.id);
+
+          if (decrementError) {
+            console.error('Error decrementing:', decrementError);
+          }
+
+          await refreshProfile();
+        }
+      }
+    }
+
+    setSearchedQuery(q);
     setHasSearched(true);
     setExpandedCards(new Set());
-    if (isDemo) localStorage.setItem('cesta_demo_used', '1');
+  };
+
+  const handleSearch = () => {
+    if (!query.trim()) return;
+    doSearch(query);
   };
 
   const results = hasSearched ? findAllMatches(searchedQuery) : [];
@@ -200,12 +236,8 @@ export default function SearchPage() {
               <button
                 key={chip.query}
                 onClick={() => {
-                  if (isDemo && hasSearched) return;
                   setQuery(chip.query);
-                  setSearchedQuery(chip.query);
-                  setHasSearched(true);
-                  setExpandedCards(new Set());
-                  if (isDemo) localStorage.setItem('cesta_demo_used', '1');
+                  doSearch(chip.query);
                 }}
                 className="px-4 py-2.5 rounded-full text-[15px] text-muted-foreground bg-card border border-border/30 hover:border-primary/20 hover:text-foreground transition-all"
               >
