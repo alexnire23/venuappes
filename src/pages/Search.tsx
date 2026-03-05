@@ -126,8 +126,13 @@ export default function SearchPage() {
 
   const doSearch = async (q: string) => {
     if (ENABLE_AUTH && !user) {
-      navigate('/auth');
-      return;
+      const demoUsed = localStorage.getItem('cesta_demo_used');
+      if (demoUsed === '1') {
+        navigate('/auth');
+        return;
+      }
+      localStorage.setItem('cesta_demo_used', '1');
+      // continuar mostrando resultado
     }
 
     if (ENABLE_AUTH && user) {
