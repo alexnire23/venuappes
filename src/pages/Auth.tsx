@@ -47,7 +47,6 @@ export default function Auth() {
       toast.error(emailResult.error.errors[0].message);
       return;
     }
-
     const passwordResult = passwordSchema.safeParse(password);
     if (!passwordResult.success) {
       toast.error(passwordResult.error.errors[0].message);
@@ -56,31 +55,51 @@ export default function Auth() {
 
     setIsSubmitting(true);
 
-    const { error: signInError } = await signInWithEmail(email, password);
+    // Intentar login primero
+    const { data: signInData, error: signInError } = await signInWithEmail(email, password);
 
-    if (signInError) {
-      if (signInError.message.includes('Invalid login credentials')) {
-        const { error: signUpError } = await signUpWithEmail(email, password);
-        if (signUpError) {
-          if (signUpError.message.includes('already registered')) {
-            toast.error('Contraseña incorrecta.');
-          } else {
-            toast.error('Error al crear la cuenta. Inténtalo de nuevo.');
-          }
-          setIsSubmitting(false);
-          return;
+    if (!signInError && signInData?.user) {
+      navigate('/home', { replace: true });
+      return;
+    }
+
+    // Si falla el login, intentar registro
+    if (signInError?.message.includes('Invalid login credentials')) {
+      const { data: signUpData, error: signUpError } = await signUpWithEmail(email, password);
+
+      if (signUpError) {
+        if (signUpError.message.includes('already registered')) {
+          toast.error('Contraseña incorrecta.');
+        } else {
+          toast.error('Error al crear la cuenta. Inténtalo de nuevo.');
         }
-        toast.success('¡Cuenta creada!');
-        navigate('/home', { replace: true });
-        return;
-      } else {
-        toast.error('Error al iniciar sesión. Inténtalo de nuevo.');
         setIsSubmitting(false);
         return;
       }
+
+      // Si el registro devuelve sesión directamente (email confirm desactivado)
+      if (signUpData?.user && signUpData?.session) {
+        toast.success('¡Cuenta creada!');
+        navigate('/home', { replace: true });
+        return;
+      }
+
+      // Si no hay sesión inmediata, hacer login manual
+      const { data: loginData, error: loginError } = await signInWithEmail(email, password);
+
+      if (!loginError && loginData?.user) {
+        toast.success('¡Cuenta creada!');
+        navigate('/home', { replace: true });
+        return;
+      }
+
+      toast.error('Cuenta creada pero error al entrar. Inténtalo de nuevo.');
+      setIsSubmitting(false);
+      return;
     }
 
-    navigate('/home', { replace: true });
+    toast.error('Error al iniciar sesión. Inténtalo de nuevo.');
+    setIsSubmitting(false);
   };
 
   const handleGoogleLogin = async () => {
