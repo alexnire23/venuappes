@@ -116,8 +116,13 @@ export default function Results() {
 
       if (error) {
         console.error('Error decrement-free-use:', error);
-        // Si falla la Edge Function, no bloquear al usuario
-      } else if (data?.access_granted === false) {
+        toast.error('Error al verificar acceso');
+        navigate('/home', { replace: true });
+        setIsLoading(false);
+        return;
+      }
+
+      if (data?.access_granted === false) {
         navigate('/paywall', { replace: true });
         return;
       }
