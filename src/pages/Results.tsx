@@ -98,9 +98,17 @@ export default function Results() {
     }
 
     if (ENABLE_AUTH && user) {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } =
+        await supabase.auth.getSession();
 
-      if (!session?.access_token) {
+      // Si no hay sesión válida, refrescarla
+      let validSession = session;
+      if (!session?.access_token || sessionError) {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        validSession = refreshData?.session ?? null;
+      }
+
+      if (!validSession?.access_token) {
         navigate('/auth', { replace: true });
         return;
       }
@@ -109,7 +117,7 @@ export default function Results() {
         'decrement-free-use',
         {
           headers: {
-            Authorization: `Bearer ${session.access_token}`
+            Authorization: `Bearer ${validSession.access_token}`
           }
         }
       );
