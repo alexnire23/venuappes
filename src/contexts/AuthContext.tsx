@@ -29,30 +29,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
   const [loading, setLoading] = useState(ENABLE_AUTH);
-  const [profileLoading, setProfileLoading] = useState(false);
 
-  const fetchProfile = async (userId: string) => {
-    setProfileLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+  const fetchProfile = async (userId: string, userEmail?: string | null) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-      if (!error && data) {
-        setProfile(data);
-      } else {
-        setProfile(null);
-      }
-    } finally {
-      setProfileLoading(false);
+    if (!error && data) {
+      setProfile(data);
+      return;
     }
+
+    // Profile not found — create it automatically
+    const { data: newProfile } = await supabase
+      .from('profiles')
+      .upsert(
+        { id: userId, email: userEmail ?? null, is_paid: false, free_uses_remaining: 1 },
+        { onConflict: 'id' }
+      )
+      .select()
+      .single();
+
+    setProfile(newProfile ?? null);
   };
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id);
+      await fetchProfile(user.id, user.email);
     }
   };
 
@@ -72,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          await fetchProfile(session.user.id);
+          await fetchProfile(session.user.id, session.user.email);
         } else {
           setProfile(null);
         }
@@ -95,10 +100,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          setProfile(undefined);
+          setLoading(true);
           setTimeout(async () => {
             if (mounted) {
-              await fetchProfile(session.user.id);
+              await fetchProfile(session.user.id, session.user.email);
+              if (mounted) setLoading(false);
             }
           }, 0);
         } else {
