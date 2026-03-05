@@ -94,12 +94,8 @@ export default function Results() {
     setIsLoading(true);
 
     if (ENABLE_AUTH && !user) {
-      const demoUsed = localStorage.getItem('cesta_demo_used');
-      if (demoUsed === '1') {
-        navigate('/auth', { replace: true });
-        return;
-      }
-      localStorage.setItem('cesta_demo_used', '1');
+      navigate('/auth', { replace: true });
+      return;
     }
 
     if (ENABLE_AUTH && user) {

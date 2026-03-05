@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: newProfile } = await supabase
       .from('profiles')
       .upsert(
-        { id: userId, email: userEmail ?? null, is_paid: false, free_uses_remaining: 1 },
+        { id: userId, email: userEmail ?? null, is_paid: false, free_uses_remaining: 2 },
         { onConflict: 'id' }
       )
       .select()
