@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
-import { Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -111,7 +111,12 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
-      <div className="flex-1 flex flex-col px-5 pt-16 pb-8">
+      <div className="px-3 pt-4">
+        <button onClick={() => navigate('/home')} className="p-2 text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+      </div>
+      <div className="flex-1 flex flex-col px-5 pt-8 pb-8">
 
         {/* Headline */}
         <div className="mb-10 animate-fade-in">
