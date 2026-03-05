@@ -92,38 +92,32 @@ export default function Results() {
       localStorage.setItem('cesta_demo_used', '1');
     }
 
-    if (ENABLE_AUTH && profile) {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const { data: accessData, error: accessError } = await supabase.functions.invoke(
-          'decrement-free-use',
-          {
-            method: 'POST',
-            headers: session?.access_token
-              ? { Authorization: `Bearer ${session.access_token}` }
-              : undefined,
-          }
-        );
+    if (ENABLE_AUTH && user) {
+      const { data: { session } } = await supabase.auth.getSession();
 
-        if (accessError) {
-          console.error('Access check error:', accessError);
-          toast.error('Error al verificar acceso');
-          navigate('/home', { replace: true });
-          return;
-        }
-
-        if (!accessData?.access_granted) {
-          navigate('/paywall', { replace: true });
-          return;
-        }
-
-        await refreshProfile();
-      } catch (error) {
-        console.error('Error checking access:', error);
-        toast.error('Error al verificar acceso');
-        navigate('/home', { replace: true });
+      if (!session?.access_token) {
+        navigate('/auth', { replace: true });
         return;
       }
+
+      const { data, error } = await supabase.functions.invoke(
+        'decrement-free-use',
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        }
+      );
+
+      if (error) {
+        console.error('Error decrement-free-use:', error);
+        // Si falla la Edge Function, no bloquear al usuario
+      } else if (data?.access_granted === false) {
+        navigate('/paywall', { replace: true });
+        return;
+      }
+
+      await refreshProfile();
     }
 
     try {
