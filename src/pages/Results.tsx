@@ -78,9 +78,14 @@ export default function Results() {
 
   useEffect(() => {
     if (!state?.items || hasProcessed) return;
-    if (ENABLE_AUTH && user && profile === null) return;
+    if (loading) return;
+    if (ENABLE_AUTH && !user) {
+      processItems();
+      return;
+    }
+    if (ENABLE_AUTH && user && profile === undefined) return;
     processItems();
-  }, [state, user, profile, hasProcessed]);
+  }, [state, user, profile, hasProcessed, loading]);
 
   const processItems = async () => {
     if (!state?.items || hasProcessed) return;

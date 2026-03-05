@@ -13,7 +13,7 @@ interface Profile {
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  profile: Profile | null;
+  profile: Profile | null | undefined;
   loading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<{ data: any; error: Error | null }>;
   signUpWithEmail: (email: string, password: string) => Promise<{ data: any; error: Error | null }>;
@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
   const [loading, setLoading] = useState(ENABLE_AUTH);
   const [profileLoading, setProfileLoading] = useState(false);
 
@@ -42,6 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!error && data) {
         setProfile(data);
+      } else {
+        setProfile(null);
       }
     } finally {
       setProfileLoading(false);
@@ -68,9 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
           await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -89,8 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
+          setProfile(undefined);
           setTimeout(async () => {
             if (mounted) {
               await fetchProfile(session.user.id);
