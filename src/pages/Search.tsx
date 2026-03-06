@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { ENABLE_AUTH } from '@/config/flags';
+import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
 
 interface Product {
   id: string;
@@ -189,7 +190,7 @@ export default function SearchPage() {
         </Button>
         <h1 className="font-serif text-lg font-semibold text-foreground">Buscar producto</h1>
       </header>
-
+      {ENABLE_AUTH && user && <div className="px-6 pt-3"><FreeUsesIndicator /></div>}
       {/* Search bar */}
       <div className="px-6 sm:px-8 pt-8 pb-3 space-y-5">
         <p className="text-base text-muted-foreground leading-relaxed">

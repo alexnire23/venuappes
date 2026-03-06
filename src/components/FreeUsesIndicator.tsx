@@ -1,29 +1,28 @@
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sparkles, Infinity } from 'lucide-react';
 
 export function FreeUsesIndicator() {
   const { profile, loading } = useAuth();
+  const navigate = useNavigate();
 
-  if (loading || !profile) return null;
-
-  // Don't show for paid users (they have unlimited)
-  if (profile.is_paid) {
-    return (
-      <div className="flex items-center gap-1.5 text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-        <Infinity className="h-3.5 w-3.5" />
-        <span className="font-medium">Acceso ilimitado</span>
-      </div>
-    );
-  }
+  if (loading || !profile || profile.is_paid) return null;
 
   const remaining = profile.free_uses_remaining;
 
+  if (remaining <= 0) {
+    return (
+      <button
+        onClick={() => navigate('/paywall')}
+        className="text-xs text-destructive font-medium px-3 py-1.5 rounded-full border border-destructive/30 hover:bg-destructive/5 transition-colors"
+      >
+        Sin usos restantes · Desbloquea →
+      </button>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-      <Sparkles className="h-3.5 w-3.5" />
-      <span className="font-medium">
-        {remaining} {remaining === 1 ? 'uso gratis' : 'usos gratis'}
-      </span>
+    <div className="text-xs text-muted-foreground/60 px-3 py-1.5">
+      ✦ {remaining} {remaining === 1 ? 'uso gratis' : 'usos gratis'}
     </div>
   );
 }

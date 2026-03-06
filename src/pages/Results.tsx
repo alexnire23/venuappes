@@ -6,6 +6,7 @@ import { RotateCcw, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ImageLightbox } from '@/components/ImageLightbox';
+import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
 
 interface LocationState {
   inputType: 'image' | 'text';
@@ -230,8 +231,12 @@ export default function Results() {
   return (
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
-      <header className="px-5 py-5 text-center border-b border-border">
-        <h1 className="text-lg text-foreground">Tu compra</h1>
+      <header className="px-5 py-5 border-b border-border">
+        <div className="flex items-center justify-between">
+          <div className="w-20" />
+          <h1 className="text-lg text-foreground">Tu compra</h1>
+          <div className="w-20 flex justify-end">{ENABLE_AUTH && user && <FreeUsesIndicator />}</div>
+        </div>
         {!isLoading && results.length > 0 && (
           <div className="mt-1.5 flex items-center justify-center gap-1.5">
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold tracking-[0.1em] uppercase text-primary" style={{ fontFamily: 'Inter, sans-serif' }}>

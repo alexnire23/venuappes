@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { FreeUsesIndicator } from '@/components/FreeUsesIndicator';
+import { ENABLE_AUTH } from '@/config/flags';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Write() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [text, setText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -52,6 +56,7 @@ export default function Write() {
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
         <h1 className="text-[17px] font-medium text-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>Tu lista</h1>
+        <div className="ml-auto">{ENABLE_AUTH && user && <FreeUsesIndicator />}</div>
       </header>
 
       {/* Main Content */}
