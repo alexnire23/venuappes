@@ -27,18 +27,46 @@ export default function Upload() {
 
   const handleProcess = async () => {
     if (!selectedImage) return;
-
     setIsProcessing(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const base64Data = selectedImage.split(',')[1];
+      const mimeType = selectedImage.split(';')[0].split(':')[1];
 
-    navigate('/confirm', {
-      state: {
-        inputType: 'image',
-        items: ['Patatas fritas', 'Yogur', 'Tomate frito', 'Galletas', 'Huevos'],
-        rawInput: 'Imagen subida',
-      },
-    });
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ base64Data, mimeType }),
+        }
+      );
+
+      const data = await response.json();
+      const items: string[] = data.items ?? [];
+
+      if (items.length === 0) {
+        toast.error('No se pudo detectar una lista de la compra en la imagen');
+        setIsProcessing(false);
+        return;
+      }
+
+      navigate('/confirm', {
+        state: {
+          inputType: 'image',
+          items,
+          rawInput: 'Imagen subida',
+        },
+      });
+
+    } catch (error) {
+      console.error('Error processing image:', error);
+      toast.error('Error al analizar la imagen. Inténtalo de nuevo.');
+      setIsProcessing(false);
+    }
   };
 
   return (
