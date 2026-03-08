@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
@@ -10,22 +10,23 @@ const emailSchema = z.string().email('Por favor, introduce un email válido');
 const passwordSchema = z.string().min(6, 'La contraseña debe tener al menos 6 caracteres');
 
 export default function Auth() {
-  const { user, loading, signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
-  const location = useLocation();
+  const { user, loading, signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
 
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const from = (location.state as { from?: string })?.from || '/home';
+  const getDestination = () =>
+    sessionStorage.getItem('confirmState') ? '/results' : '/home';
 
   useEffect(() => {
     if (user && !loading) {
-      navigate(from, { replace: true });
+      navigate(getDestination(), { replace: true });
     }
-  }, [user, loading, navigate, from]);
+  }, [user, loading, navigate]);
 
   if (loading) {
     return (
@@ -36,7 +37,7 @@ export default function Auth() {
   }
 
   if (user) {
-    return <Navigate to={from} replace />;
+    return <Navigate to={getDestination()} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,21 +56,22 @@ export default function Auth() {
 
     setIsSubmitting(true);
 
-    // Intentar login primero
-    const { data: signInData, error: signInError } = await signInWithEmail(email, password);
-
-    if (!signInError && signInData?.user) {
-      navigate('/home', { replace: true });
-      return;
-    }
-
-    // Si falla el login, intentar registro
-    if (signInError?.message.includes('Invalid login credentials')) {
+    if (isLogin) {
+      const { data, error } = await signInWithEmail(email, password);
+      if (error) {
+        toast.error('Email o contraseña incorrectos.');
+        setIsSubmitting(false);
+        return;
+      }
+      if (data?.user) {
+        navigate(getDestination(), { replace: true });
+      }
+    } else {
       const { data: signUpData, error: signUpError } = await signUpWithEmail(email, password);
 
       if (signUpError) {
         if (signUpError.message.includes('already registered')) {
-          toast.error('Contraseña incorrecta.');
+          toast.error('Este email ya tiene cuenta. Inicia sesión.');
         } else {
           toast.error('Error al crear la cuenta. Inténtalo de nuevo.');
         }
@@ -77,35 +79,22 @@ export default function Auth() {
         return;
       }
 
-      // Si el registro devuelve sesión directamente (email confirm desactivado)
       if (signUpData?.user && signUpData?.session) {
         toast.success('¡Cuenta creada!');
-        navigate('/home', { replace: true });
+        navigate(getDestination(), { replace: true });
         return;
       }
 
-      // Si no hay sesión inmediata, hacer login manual
+      // Sin sesión inmediata — hacer login manual
       const { data: loginData, error: loginError } = await signInWithEmail(email, password);
-
       if (!loginError && loginData?.user) {
         toast.success('¡Cuenta creada!');
-        navigate('/home', { replace: true });
+        navigate(getDestination(), { replace: true });
         return;
       }
 
       toast.error('Cuenta creada pero error al entrar. Inténtalo de nuevo.');
       setIsSubmitting(false);
-      return;
-    }
-
-    toast.error('Error al iniciar sesión. Inténtalo de nuevo.');
-    setIsSubmitting(false);
-  };
-
-  const handleGoogleLogin = async () => {
-    const { error } = await signInWithGoogle();
-    if (error) {
-      toast.error('Error al conectar con Google. Inténtalo de nuevo.');
     }
   };
 
@@ -121,17 +110,16 @@ export default function Auth() {
         {/* Headline */}
         <div className="mb-10 animate-fade-in">
           <h1 className="font-serif text-[2rem] text-foreground leading-tight mb-2">
-            Cesta
+            {isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
           </h1>
           <p className="text-muted-foreground text-[15px]" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Entra para ver tus recomendaciones.
+            {isLogin ? 'Entra para ver tus recomendaciones.' : 'Crea tu cuenta para empezar.'}
           </p>
         </div>
 
         {/* Form card */}
         <div className="bg-card rounded-2xl border border-border p-6 mb-5 animate-slide-up" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
             <div>
               <label className="block text-[13px] font-medium text-foreground mb-1.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Email
@@ -149,7 +137,6 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-[13px] font-medium text-foreground mb-1.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Contraseña
@@ -183,15 +170,19 @@ export default function Auth() {
               {isSubmitting ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Un momento...</>
               ) : (
-                'Continuar'
+                isLogin ? 'Iniciar sesión' : 'Crear cuenta'
               )}
             </button>
           </form>
         </div>
 
-        <p className="text-[13px] text-muted-foreground text-center mb-5" style={{ fontFamily: 'Inter, sans-serif' }}>
-          Si ya tienes cuenta, entra. Si no, la creamos.
-        </p>
+        <button
+          onClick={() => setIsLogin(!isLogin)}
+          className="text-[13px] text-muted-foreground text-center hover:text-foreground transition-colors"
+          style={{ fontFamily: 'Inter, sans-serif' }}
+        >
+          {isLogin ? '¿No tienes cuenta? Crear cuenta' : '¿Ya tienes cuenta? Iniciar sesión'}
+        </button>
 
       </div>
     </div>
