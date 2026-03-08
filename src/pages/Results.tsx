@@ -262,7 +262,7 @@ export default function Results() {
                 <div
                   key={result.categorySlug}
                   className="bg-card rounded-2xl border border-border overflow-hidden animate-slide-up"
-                  style={{ animationDelay: `${index * 0.06}s`, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
+                  style={{ animationDelay: `${index * 0.06}s`, boxShadow: 'var(--shadow-md)' }}
                 >
                   {!result.primary && (
                     <div className="p-5">
@@ -290,7 +290,7 @@ export default function Results() {
                               setLightboxSrc(getImageSrc(result.primary!.image_key!));
                               setLightboxAlt(result.primary!.name_exact);
                             }}
-                            className="w-20 h-20 rounded-xl bg-background overflow-hidden shrink-0 cursor-zoom-in border border-border/50"
+                            className="w-20 h-20 rounded-xl bg-background overflow-hidden shrink-0 cursor-zoom-in border border-border/30"
                           >
                             <img
                               src={getImageSrc(result.primary.image_key!)}
@@ -307,7 +307,7 @@ export default function Results() {
                           <h3 className="text-[16px] font-semibold text-foreground mb-1.5 leading-snug" style={{ fontFamily: 'Inter, sans-serif' }}>
                             {result.primary.name_exact}
                           </h3>
-                          <span className="inline-block text-[10px] font-semibold text-white bg-primary px-2.5 py-0.5 rounded-full uppercase tracking-[0.08em]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <span className="inline-block text-[10px] font-semibold text-white bg-primary px-2.5 py-0.5 rounded-full uppercase" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.05em' }}>
                             Recomendado
                           </span>
                         </div>
@@ -347,7 +347,7 @@ export default function Results() {
                                     setLightboxSrc(getImageSrc(result.alternative!.image_key!));
                                     setLightboxAlt(result.alternative!.name_exact);
                                   }}
-                                  className="w-16 h-16 rounded-xl bg-background overflow-hidden shrink-0 cursor-zoom-in border border-border/50"
+                                  className="w-16 h-16 rounded-xl bg-background overflow-hidden shrink-0 cursor-zoom-in border border-border/30"
                                 >
                                   <img
                                     src={getImageSrc(result.alternative.image_key!)}
@@ -397,7 +397,7 @@ export default function Results() {
 
             {/* Closing block */}
             {results.length > 0 && (
-              <div className="mt-6 bg-[#F0F5F2] rounded-2xl p-6 text-center">
+              <div className="mt-6 rounded-2xl p-6 text-center" style={{ background: 'linear-gradient(135deg, #F0F5F2 0%, #E8F0EB 100%)' }}>
                 <p className="text-[18px] text-foreground leading-snug">
                   Estos productos están seleccionados por ingredientes, no por precio ni marketing.
                 </p>

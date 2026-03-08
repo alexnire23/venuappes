@@ -48,7 +48,7 @@ export default function Paywall() {
         <div className="bg-card rounded-2xl border border-border p-6 mb-6 animate-slide-up" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
           {/* Price */}
           <div className="mb-5">
-            <span className="font-serif text-[42px] text-foreground leading-none">1,99€</span>
+            <span className="font-serif text-[56px] text-foreground leading-none">1,99€</span>
             <span className="text-muted-foreground text-[14px] ml-2" style={{ fontFamily: 'Inter, sans-serif' }}>· pago único</span>
           </div>
 
@@ -78,7 +78,7 @@ export default function Paywall() {
         <div className="animate-slide-up">
           <button
             onClick={() => navigate('/payment')}
-            className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 mb-4 transition-opacity hover:opacity-85"
+            className="w-full h-16 bg-primary text-white text-[16px] font-medium rounded-full flex items-center justify-center gap-2 mb-4 transition-opacity hover:opacity-85"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             Acceder por 1,99€ →

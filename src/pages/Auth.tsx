@@ -118,7 +118,7 @@ export default function Auth() {
         </div>
 
         {/* Form card */}
-        <div className="bg-card rounded-2xl border border-border p-6 mb-5 animate-slide-up" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+        <div className="bg-card rounded-2xl border border-border p-6 mb-5 animate-slide-up" style={{ boxShadow: 'var(--shadow-md)' }}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-[13px] font-medium text-foreground mb-1.5" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -131,7 +131,7 @@ export default function Auth() {
                   placeholder="tu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-9 h-11 rounded-xl border-border bg-background text-[14px]"
+                  className="pl-9 h-12 rounded-xl border-border bg-background text-[14px]"
                   required
                 />
               </div>
@@ -148,7 +148,7 @@ export default function Auth() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-9 pr-9 h-11 rounded-xl border-border bg-background text-[14px]"
+                  className="pl-9 pr-9 h-12 rounded-xl border-border bg-background text-[14px]"
                   required
                 />
                 <button
@@ -164,7 +164,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85 disabled:opacity-50 mt-2"
+              className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85 disabled:opacity-50 mt-2"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {isSubmitting ? (

@@ -24,7 +24,7 @@ export default function Profile() {
 
       <div className="flex-1 px-5 py-8 flex flex-col gap-6">
         {/* Info card */}
-        <div className="bg-card rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+        <div className="bg-card rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: 'var(--shadow-md)' }}>
           <div>
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.1em] mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
               Email
@@ -53,7 +53,7 @@ export default function Profile() {
         {/* Sign out */}
         <button
           onClick={handleSignOut}
-          className="w-full h-12 rounded-full border border-border text-[15px] text-muted-foreground transition-opacity hover:opacity-70"
+          className="w-full h-12 rounded-full border border-destructive/40 text-[15px] text-destructive hover:bg-destructive/5 hover:opacity-100 transition-all"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
           Cerrar sesión

@@ -22,7 +22,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
       {/* Header */}
       <header className="px-5 py-5 flex items-center justify-between">
-        <span className="font-serif text-xl text-foreground">Cesta</span>
+        <span className="font-serif text-2xl tracking-tight text-foreground">Cesta</span>
         <Button variant="ghost" size="icon" onClick={() => navigate(user ? '/profile' : '/auth')}>
           <User className="h-5 w-5" />
         </Button>
@@ -36,10 +36,10 @@ export default function Home() {
       <div className="flex-1 flex flex-col px-5 pt-10 pb-8">
         <div className="flex-1 flex flex-col">
           <div className="w-full animate-slide-up">
-            <h2 className="text-[2rem] text-foreground mb-2 leading-tight">
+            <h2 className="text-[2.4rem] text-foreground mb-3 leading-tight">
               ¿Qué compras hoy?
             </h2>
-            <p className="text-muted-foreground text-[15px] mb-5">
+            <p className="text-foreground/60 text-[15px] mb-5">
               Te decimos exactamente qué comprar.
             </p>
 
@@ -61,17 +61,17 @@ export default function Home() {
             {/* Upload Photo — primary CTA */}
             <button
               onClick={() => navigate('/upload')}
-              className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2.5 mb-10 transition-opacity hover:opacity-85"
+              className="w-full h-16 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2.5 mb-10 transition-opacity hover:opacity-85"
             >
               <Camera className="h-5 w-5" />
               Subir foto de mi lista
             </button>
 
             {/* Secondary actions */}
-            <div className="divide-y divide-border">
+            <div className="bg-card border border-border/40 rounded-2xl overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
               <button
                 onClick={() => navigate('/write')}
-                className="w-full flex items-center justify-between py-4 group transition-opacity hover:opacity-70"
+                className="w-full flex items-center justify-between px-5 py-4 group transition-opacity hover:opacity-70"
               >
                 <div className="flex items-center gap-3">
                   <PenLine className="h-[18px] w-[18px] text-muted-foreground" />
@@ -82,7 +82,7 @@ export default function Home() {
 
               <button
                 onClick={() => navigate('/search')}
-                className="w-full flex items-center justify-between py-4 group transition-opacity hover:opacity-70"
+                className="w-full flex items-center justify-between px-5 py-4 group transition-opacity hover:opacity-70 border-t border-border/30"
               >
                 <div className="flex items-center gap-3">
                   <Search className="h-[18px] w-[18px] text-muted-foreground" />

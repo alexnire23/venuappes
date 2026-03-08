@@ -203,7 +203,7 @@ export default function SearchPage() {
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && query.trim() && handleSearch()}
             placeholder="Buscar…"
-            className="pl-12 h-14 rounded-2xl bg-card border-border/30 text-base px-5"
+            className="pl-12 h-14 rounded-2xl bg-card border-border/30 text-base px-5 focus-visible:ring-1 focus-visible:ring-primary/20"
             autoFocus
           />
         </div>
@@ -240,7 +240,7 @@ export default function SearchPage() {
                   setQuery(chip.query);
                   doSearch(chip.query);
                 }}
-                className="px-4 py-2.5 rounded-full text-[15px] text-muted-foreground bg-card border border-border/30 hover:border-primary/20 hover:text-foreground transition-all"
+                className="px-4 py-2.5 rounded-full text-[15px] text-muted-foreground bg-card border border-border/30 hover:border-primary/20 hover:text-foreground hover:shadow-sm transition-all"
               >
                 {chip.label}
               </button>
@@ -294,7 +294,7 @@ export default function SearchPage() {
                             setLightboxSrc(getImageSrc(result.primary!.image_key!));
                             setLightboxAlt(result.primary!.name_exact);
                           }}
-                          className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform"
+                          className="w-32 h-32 rounded-xl bg-secondary/30 overflow-hidden shrink-0 cursor-zoom-in active:scale-95 transition-transform border border-border/30"
                         >
                           <img
                             src={getImageSrc(result.primary.image_key!)}
