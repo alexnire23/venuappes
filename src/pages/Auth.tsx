@@ -207,13 +207,18 @@ export default function Auth() {
             </form>
           </div>
 
-          <button
-            onClick={handleToggleMode}
-            className="w-full h-12 rounded-full border-2 border-primary text-primary font-medium text-[15px] flex items-center justify-center gap-1 hover:bg-primary hover:text-white transition-all"
-            style={{ fontFamily: 'Inter, sans-serif' }}
-          >
-            Crear cuenta →
-          </button>
+          <div className="text-center mt-2">
+            <span className="text-[14px] text-muted-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>
+              ¿No tienes cuenta?{' '}
+            </span>
+            <button
+              onClick={handleToggleMode}
+              className="text-[14px] font-semibold text-primary underline underline-offset-2 hover:opacity-70 transition-opacity"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Crear cuenta →
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -350,13 +355,18 @@ export default function Auth() {
           )}
         </div>
 
-        <button
-          onClick={handleToggleMode}
-          className="w-full h-12 rounded-full border-2 border-primary text-primary font-medium text-[15px] flex items-center justify-center gap-1 hover:bg-primary hover:text-white transition-all"
-          style={{ fontFamily: 'Inter, sans-serif' }}
-        >
-          ← Iniciar sesión
-        </button>
+        <div className="text-center mt-2">
+          <span className="text-[14px] text-muted-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>
+            ¿Ya tienes cuenta?{' '}
+          </span>
+          <button
+            onClick={handleToggleMode}
+            className="text-[14px] font-semibold text-primary underline underline-offset-2 hover:opacity-70 transition-opacity"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            Iniciar sesión →
+          </button>
+        </div>
 
       </div>
     </div>
