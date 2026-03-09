@@ -248,6 +248,20 @@ export default function SearchPage() {
           </div>
         )}
 
+        {hasSearched && (
+          <button
+            onClick={() => {
+              setHasSearched(false);
+              setQuery('');
+              setSearchedQuery('');
+            }}
+            className="flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground transition-colors mb-6"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Nueva búsqueda
+          </button>
+        )}
+
         {/* Empty state */}
         {showEmpty && (
           <div className="text-center py-24 animate-fade-in">
