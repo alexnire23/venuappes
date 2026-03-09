@@ -216,7 +216,7 @@ export default function Auth() {
               className="text-[14px] font-semibold text-primary underline underline-offset-2 hover:opacity-70 transition-opacity"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
-              Crear cuenta →
+              Crear cuenta
             </button>
           </div>
         </div>
@@ -292,7 +292,7 @@ export default function Auth() {
                 className="w-full h-14 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center gap-2 transition-opacity hover:opacity-85 mt-2"
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
-                Continuar →
+                Continuar
               </button>
             </form>
           ) : (
@@ -364,7 +364,7 @@ export default function Auth() {
             className="text-[14px] font-semibold text-primary underline underline-offset-2 hover:opacity-70 transition-opacity"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
-            Iniciar sesión →
+            Iniciar sesión
           </button>
         </div>
 
