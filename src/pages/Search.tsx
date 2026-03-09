@@ -215,7 +215,7 @@ export default function SearchPage() {
           >
             Crear cuenta para seguir →
           </button>
-        ) : (
+        ) : !hasSearched ? (
           <Button
             onClick={handleSearch}
             disabled={!query.trim()}
@@ -225,7 +225,7 @@ export default function SearchPage() {
           >
             Ver recomendación
           </Button>
-        )}
+        ) : null}
       </div>
 
       {/* Content */}
