@@ -99,9 +99,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
+    <div className={`min-h-screen flex flex-col safe-top safe-bottom transition-colors duration-300 ${isLogin ? 'bg-background' : 'bg-primary'}`}>
       <div className="px-3 pt-4">
-        <button onClick={() => navigate('/home')} className="p-2 text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => navigate('/home')}
+          className={`p-2 transition-colors ${isLogin ? 'text-muted-foreground hover:text-foreground' : 'text-white hover:text-white/80'}`}
+        >
           <ArrowLeft className="h-5 w-5" />
         </button>
       </div>
@@ -109,11 +112,11 @@ export default function Auth() {
 
         {/* Headline */}
         <div className="mb-10 animate-fade-in">
-          <h1 className="font-serif text-[2rem] text-foreground leading-tight mb-2">
-            {isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
+          <h1 className={`font-serif text-[2rem] leading-tight mb-2 ${isLogin ? 'text-foreground' : 'text-white'}`}>
+            {isLogin ? 'Iniciar sesión' : 'Crea tu cuenta'}
           </h1>
-          <p className="text-muted-foreground text-[15px]" style={{ fontFamily: 'Inter, sans-serif' }}>
-            {isLogin ? 'Entra para ver tus recomendaciones.' : 'Crea tu cuenta para empezar.'}
+          <p className={`text-[15px] ${isLogin ? 'text-muted-foreground' : 'text-white/80'}`} style={{ fontFamily: 'Inter, sans-serif' }}>
+            {isLogin ? 'Entra para ver tus recomendaciones.' : 'Empieza gratis. Sin tarjeta.'}
           </p>
         </div>
 
@@ -178,10 +181,10 @@ export default function Auth() {
 
         <button
           onClick={() => setIsLogin(!isLogin)}
-          className="text-[13px] text-muted-foreground text-center hover:text-foreground transition-colors"
+          className={`text-[13px] text-center transition-colors ${isLogin ? 'text-primary font-medium hover:text-primary/80' : 'text-white/70 hover:text-white'}`}
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
-          {isLogin ? '¿No tienes cuenta? Crear cuenta' : '¿Ya tienes cuenta? Iniciar sesión'}
+          {isLogin ? '¿Eres nuevo? Crear cuenta →' : '¿Ya tienes cuenta? Iniciar sesión'}
         </button>
 
       </div>

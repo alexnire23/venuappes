@@ -13,16 +13,30 @@ export function FreeUsesIndicator() {
     return (
       <button
         onClick={() => navigate('/paywall')}
-        className="text-xs text-destructive font-medium px-3 py-1.5 rounded-full border border-destructive/30 hover:bg-destructive/5 transition-colors"
+        className="text-xs font-medium text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-full transition-colors"
       >
-        Sin usos restantes · Desbloquea →
+        Sin usos · Desbloquea acceso ilimitado →
+      </button>
+    );
+  }
+
+  if (remaining === 1) {
+    return (
+      <button
+        onClick={() => navigate('/paywall')}
+        className="text-xs font-medium text-amber-800 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-full transition-colors"
+      >
+        ✦ 1 uso gratis restante · Desbloquea →
       </button>
     );
   }
 
   return (
-    <div className="text-xs text-muted-foreground/60 px-3 py-1.5">
-      ✦ {remaining} {remaining === 1 ? 'uso gratis' : 'usos gratis'}
-    </div>
+    <button
+      onClick={() => navigate('/paywall')}
+      className="text-xs font-medium text-muted-foreground bg-muted hover:bg-muted/70 px-3 py-1.5 rounded-full transition-colors"
+    >
+      ✦ {remaining} usos gratis
+    </button>
   );
 }
