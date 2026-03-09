@@ -209,10 +209,10 @@ export default function Auth() {
 
           <button
             onClick={handleToggleMode}
-            className="text-[13px] text-primary font-medium text-center hover:text-primary/80 transition-colors"
+            className="w-full h-12 rounded-full border-2 border-primary text-primary font-medium text-[15px] flex items-center justify-center gap-1 hover:bg-primary hover:text-white transition-all"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
-            ¿Eres nuevo? Crear cuenta →
+            Crear cuenta →
           </button>
         </div>
       </div>
@@ -352,10 +352,10 @@ export default function Auth() {
 
         <button
           onClick={handleToggleMode}
-          className="text-[13px] text-muted-foreground text-center hover:text-foreground transition-colors"
+          className="w-full h-12 rounded-full border-2 border-primary text-primary font-medium text-[15px] flex items-center justify-center gap-1 hover:bg-primary hover:text-white transition-all"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
-          ¿Ya tienes cuenta? Iniciar sesión
+          ← Iniciar sesión
         </button>
 
       </div>
